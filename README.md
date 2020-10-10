@@ -3990,5 +3990,47 @@ perform these cryptographic operations. This overhead can be significant.</p>
 <p>The main benefit is the elastic load balancer gets to see the unencrypted
 HTTP and can take actions based on what's contained in this plain text
 protocol.</p>
+<h4><a id="user-content-pass-through---network-load-balancer" class="anchor" aria-hidden="true" href="#pass-through---network-load-balancer"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Pass-through - Network Load Balancer</h4>
+<p>The client connects, but the load balancer passes the connection along without
+decrypting the data at all. The instances still need the SSL certificates,
+but the load balancer does not. Specifically it's a network load balancer
+which is able to perform this style of connection.</p>
+<p>The load balancer is configured for TCP, it can see the source or destinations,
+but it never touches the encrypted connection. The certificate never
+needs to be seen by AWS.</p>
+<p>Negative is you don't get any load balancing based on the HTTP part
+because that is never exposed to the load balancer. The EC2 instances
+still need the compute cryptographic overhead.</p>
+<h4><a id="user-content-offload" class="anchor" aria-hidden="true" href="#offload"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Offload</h4>
+<p>Clients connect to the load balancer using HTTPS and are terminated on the
+load balancer. The LB needs an SSL certificate to decrypt the data, but
+on the backend the data is sent via HTTP. While there is a certificate
+required on the load balancer, this is not needed on the LB.</p>
+<p>Data is in plaintext form across AWS's network. Not a problem for most.</p>
+<h4><a id="user-content-connection-stickiness" class="anchor" aria-hidden="true" href="#connection-stickiness"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Connection Stickiness</h4>
+<p>If there is no stickiness, each time the customer logs on they will have
+a stateless experience. If the state is stored on a particular server,
+sessions can't be load balanced across multiple servers.</p>
+<p>There is an option available within elastic load balancers called Session
+Stickiness. And within an application load balancer this is enabled on a
+target group. If enabled, the first time a user makes a request, the load
+balancer generates a cookie called AWSALB with a duration. A valid duration
+is between one second and seven days. For this time, sessions will be sent to
+the same backend instance. This will happen until:</p>
+<ul>
+<li>A server failure, then the user will be moved to a different server.</li>
+<li>The cookie expires, the whole process will repeat and will receive a
+new cookie</li>
+</ul>
+<p>This could cause backend unevenness because one user will always be forced
+to the same server no matter what the distributed load is. Applications
+should be designed to hold session stickiness somewhere other than EC2.</p>
+<hr>
+<h2><a id="user-content-serverless-and-app-services" class="anchor" aria-hidden="true" href="#serverless-and-app-services"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Serverless-and-App-Services</h2>
+<h3><a id="user-content-architecture-evolution" class="anchor" aria-hidden="true" href="#architecture-evolution"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Architecture Evolution</h3>
+<h4><a id="user-content-monolithic" class="anchor" aria-hidden="true" href="#monolithic"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Monolithic</h4>
+<ul>
+<li>Fails together.
+<ul>
 
    
