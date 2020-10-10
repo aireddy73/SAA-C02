@@ -1,1 +1,362 @@
-X
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="03-Cloud-Computing-Fundamentals" id="afc2ae5f2b7e64ac40e4f0911fc38423-a2100c67d36eae1e9363abc5b66ff105725eebf9" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/03-Cloud-Computing-Fundamentals">03-Cloud-Computing-Fundamentals</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="04-AWS-Fundamentals" id="15e1b3745ec68dbca85d16e57a6866b5-a2100c67d36eae1e9363abc5b66ff105725eebf9" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/04-AWS-Fundamentals">04-AWS-Fundamentals</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="05-IAM-Accounts-AWS-Organizations" id="39a83b4ac068912450738d070cab3ecd-a9e4e996ce2eb7812070bd1c3d04eed57c89bf22" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/05-IAM-Accounts-AWS-Organizations">05-IAM-Accounts-AWS-Organizations</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="06-Simple-Storage-Service-S3" id="0ca03dd5065d4e19a8ad1e1c3e96f6ee-d7ab8db5c2cb0de52ed59bd5da81abd6fcda645d" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/06-Simple-Storage-Service-S3">06-Simple-Storage-Service-S3</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="07-Virtual-Private-Cloud-VPC" id="fcf29d9eefe046cc125fa80d8bdcbcb4-5bf1c2f13b3bd707dfdb39b7630f1b89419b49bc" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/07-Virtual-Private-Cloud-VPC">07-Virtual-Private-Cloud-VPC</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="08-Elastic-Cloud-Compute-EC2" id="831b6492703ff7cdad610a2225de7921-260635d6eb971403885929e481af98e573d85584" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/08-Elastic-Cloud-Compute-EC2">08-Elastic-Cloud-Compute-EC2</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="09-Containers-and-ECS" id="16945c3197d805c1970b989e6938265c-cd2815d6544e76592b882121f733cf3a4f7ae92c" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/09-Containers-and-ECS">09-Containers-and-ECS</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="10-Advanced-EC2" id="b50f85ad13e7f3ca3b3e129f96959238-c26a0c1f2ff0d9400bd4cf0f95d4996720559f77" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/10-Advanced-EC2">10-Advanced-EC2</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="11-Route-53" id="228d3f20c69e70564466df046c4a56cf-e996c774cf946cc11138aa6c3686b9059a9834e8" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/11-Route-53">11-Route-53</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="12-Relational-Database-Service-RDS" id="8bc8906372b1236d9b8e0a7fa9ded8be-c1738eb03d654ca9c0733e121b8075cb4bc357f2" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/12-Relational-Database-Service-RDS">12-Relational-Database-Service-RDS</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="13-Network-Storage-EFS" id="e06c73b1c22c67cad328a51662cf1200-cb22033f30bf68e6837e96e2dd65a82e0173d5e4" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/13-Network-Storage-EFS">13-Network-Storage-EFS</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="14-HA-and-Scaling" id="1bd54f5d1a2e0faf94ffa2ff0afd22d1-729d8938b201df2f1ec91413686a3fc3a99f9362" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/14-HA-and-Scaling">14-HA-and-Scaling</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="15-Serverless-and-App-Services" id="d488001484d2f726af5f9ba39d1bf56e-100fd73f43e6000b90c6ebe8b0a3a5f6ed3b13c7" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/15-Serverless-and-App-Services">15-Serverless-and-App-Services</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="16-CDN-and-Optimization" id="09744360b12627a780be7ced00334dbd-b9cc42a6a97f7135dd8857b4c1de91c9e3ae6081" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/16-CDN-and-Optimization">16-CDN-and-Optimization</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="17-Advanced-VPC" id="2085d9fe80396a4390f45e5315beea35-dfdea0f39a6346290d3a03ae502afdee3ef8d256" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/17-Advanced-VPC">17-Advanced-VPC</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="18-Hybrid-and-Migration" id="5cdfbf6e9a20504ad0e64b306b349655-5739278ce8ff820dee0130589f4d6ffc32ec15e1" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/18-Hybrid-and-Migration">18-Hybrid-and-Migration</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="19-Security-Deployment-Operations" id="eee52ac2a94f5ffa28dfe3ac0c7f0e9c-4550c032cd8714a2271b4874a19146416b533d4c" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/19-Security-Deployment-Operations">19-Security-Deployment-Operations</a></span>
+          </div>
+
+          <div role="gridcell" class="flex-auto min-width-0 d-none d-md-block col-5 mr-3 commit-message">
+              <span class="css-truncate css-truncate-target d-block width-fit">
+                    <a data-pjax="true" title="Finished notes" class="link-gray" href="/alozano-77/AWS-SAA-C02-Course/commit/888b401059d5bd53b73989d6e996e5204b3a394c">Finished notes</a>
+              </span>
+          </div>
+
+          <div role="gridcell" class="text-gray-light text-right" style="width:100px;">
+              <time-ago datetime="2020-05-13T07:03:31Z" class="no-wrap">May 13, 2020</time-ago>
+          </div>
+
+        </div>
+        <div role="row" class="Box-row Box-row--focus-gray py-2 d-flex position-relative js-navigation-item ">
+          <div role="gridcell" class="mr-3 flex-shrink-0" style="width: 16px;">
+              <svg color="blue-3" aria-label="Directory" height="16" class="octicon octicon-file-directory color-blue-3" viewBox="0 0 16 16" version="1.1" width="16" role="img"><path fill-rule="evenodd" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3h-6.5a.25.25 0 01-.2-.1l-.9-1.2c-.33-.44-.85-.7-1.4-.7h-3.5z"></path></svg>
+
+          </div>
+
+          <div role="rowheader" class="flex-auto min-width-0 col-md-2 mr-3">
+            <span class="css-truncate css-truncate-target d-block width-fit"><a class="js-navigation-open link-gray-dark" title="20-NoSQL-and-DynamoDB" id="b3513faa47d16c2325ff8d7950384e7f-07875eb73374ac765ba53ddb29b10afaccdd9f28" href="/alozano-77/AWS-SAA-C02-Course/tree/master/Learning-Aids/20-NoSQL-and-DynamoDB">20-NoSQL-and-DynamoDB</a></span>
+          </div>
+
