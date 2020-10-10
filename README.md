@@ -4032,5 +4032,1438 @@ should be designed to hold session stickiness somewhere other than EC2.</p>
 <ul>
 <li>Fails together.
 <ul>
+<li>One error will bring the whole system down.</li>
+</ul>
+</li>
+<li>Scales together.
+<ul>
+<li>Everything expects to be running on the same compute hardware</li>
+</ul>
+</li>
+<li>Bills together.
+<ul>
+<li>All components are always running and always incurring charges.</li>
+</ul>
+</li>
+</ul>
+<p>This is the least cost effective way to architect systems.</p>
+<h4><a id="user-content-tiered" class="anchor" aria-hidden="true" href="#tiered"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Tiered</h4>
+<ul>
+<li>Different components can be on the same server or different servers.</li>
+<li>Components are coupled together because the endpoints connect together.</li>
+<li>Can adjust the size of the server that is running each application tier.</li>
+<li>Utilizes load balancers in between tiers to add capacity.</li>
+<li>Tiers are still tightly coupled.
+<ul>
+<li>Tiers expect a response from each other. If one tier fails, subsequent
+tiers will also fail because they will not receive the proper response.</li>
+<li>Back loads in one tier will impact the other tiers and customer experience.</li>
+</ul>
+</li>
+<li>Tiers must be operational and send responses even if they are not processing
+anything of value otherwise the system fails.</li>
+</ul>
+<h4><a id="user-content-evolving-with-queues" class="anchor" aria-hidden="true" href="#evolving-with-queues"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Evolving with Queues</h4>
+<ul>
+<li>Data no longer moves between tiers to be processed and instead uses a queue.
+<ul>
+<li>Often are <strong>FIFO</strong> (first in, first out)</li>
+</ul>
+</li>
+<li>Data moves into a S3 bucket.</li>
+<li>Detailed information is put into the next slot in the queue.
+<ul>
+<li>Tiers no longer expect an answer.</li>
+</ul>
+</li>
+<li>Upload tier sends an async message.
+<ul>
+<li>The upload tier can add more messages to the queue.</li>
+</ul>
+</li>
+<li>The queue will have an autoscaling group to increase processing capacity.</li>
+<li>The autoscaling group will only bring up servers as they are needed.</li>
+<li>The queue has the location of the S3 bucket and passes this onto the
+processing tier.</li>
+</ul>
+<h4><a id="user-content-event-driven-architecture" class="anchor" aria-hidden="true" href="#event-driven-architecture"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Event Driven Architecture</h4>
+<ul>
+<li>Event producers
+<ul>
+<li>Interact with customers or systems monitoring components.</li>
+<li>Produce events in reaction to something.</li>
+<li>Clicks, events, errors, actions</li>
+</ul>
+</li>
+<li>Event consumers
+<ul>
+<li>Pieces of software waiting for events to occur.</li>
+<li>Actions are taken and the system returns to waiting</li>
+</ul>
+</li>
+<li>Services can be producers and consumers at once.</li>
+<li>Resources are not waiting around to be used.</li>
+<li>Event router is needed for event driven architecture that also manages
+an event bus.</li>
+<li>Only consumes resources while handling events.</li>
+</ul>
+<h3><a id="user-content-aws-lambda" class="anchor" aria-hidden="true" href="#aws-lambda"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS Lambda</h3>
+<ul>
+<li>Function-as-a-service (FaaS)
+<ul>
+<li>Service accepts functions.</li>
+</ul>
+</li>
+<li>Event driven invocation (execution) based on an event occurring.</li>
+<li><strong>Lambda function</strong> is piece of code in one language.</li>
+<li>Lambda functions use a <strong>runtime</strong> (e.g. Python 3.6)</li>
+<li>Runs in a <strong>runtime environment</strong>.
+<ul>
+<li>Virtual environment that is ready to go to run code in that language.</li>
+<li>You are billed only for the duration a function runs.</li>
+<li>There is no charge for having lambda functions waiting and ready to go.</li>
+</ul>
+</li>
+</ul>
+<h4><a id="user-content-lambda-architecture" class="anchor" aria-hidden="true" href="#lambda-architecture"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Lambda Architecture</h4>
+<p>Best practice is to make it very small and very specialized.
+Lambda function code, when executed is known as being <strong>invoked</strong>.
+When invoked, it runs inside a runtime environment that matches the language the
+script is written in.
+The runtime environment is allocated a certain amount of memory and an
+appropriate amount of CPU. The more memory you allocate, the more CPU it gets,
+and the more the function costs to invoke per second.</p>
+<p>Lambda functions can be given an IAM role or <strong>execution role</strong>.
+The execution role is passed into the runtime environment.
+Whenever that function executes, the code inside has access to whatever
+permissions the role's permission policy provides.</p>
+<p>Lambda can be invoked in an <strong>event-driven</strong> or <strong>manual</strong> way.
+Each time you invoke a lambda function, the environment provided is new.
+Never store anything inside the runtime environment, it is ephemeral.</p>
+<p>Lambda functions by default are public services and can access any websites.
+By default they cannot access private VPC resources, but can be configured
+to do so if needed. Once configured, they can only access resources within a VPC.
+Unless you have configured your VPC to have all of the configuration needed
+to have public internet access or access to the AWS public space endpoints, then
+the Lambda will not have access.</p>
+<p>The Lambda runtime is stateless, so you should always use AWS services for input
+and output. Something like DynamoDB or S3. If a Lambda is invoked by an event,
+it gets details of the event given to it at startup.</p>
+<p>Lambda functions can run up to 15 minutes. That is the max limit.</p>
+<h4><a id="user-content-key-considerations" class="anchor" aria-hidden="true" href="#key-considerations"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Key Considerations</h4>
+<ul>
+<li>Currently 15 min execution limit.</li>
+<li>Assume each execution gets a new runtime environment.</li>
+<li>Use the execution role which is assumed when needed.</li>
+<li>Always load data from other services from public APIs or S3.</li>
+<li>Store data to other services (e.g. S3).</li>
+<li>1M free requests and 400,000 GB-seconds of compute per month.</li>
+</ul>
+<h3><a id="user-content-cloudwatch-events-and-eventbridge" class="anchor" aria-hidden="true" href="#cloudwatch-events-and-eventbridge"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CloudWatch Events and EventBridge</h3>
+<p>Delivers near real time stream of system events that describe changes in AWS
+products and services. EventBridge will replace CW Events.
+EventBridge can also handle events from third parties. Both share the same
+underlying architecture. AWS is now encouraging a migration to EB.</p>
+<h4><a id="user-content-cloudwatch-events-key-concepts" class="anchor" aria-hidden="true" href="#cloudwatch-events-key-concepts"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CloudWatch Events Key Concepts</h4>
+<p>They can observe if X happens at Y time(s), do Z.</p>
+<ul>
+<li>X is a supported service which is a producer of an event.</li>
+<li>Y can be a certain time or time period.</li>
+<li>Z is a supported target service to deliver the event to.</li>
+</ul>
+<p>EventBridge is basically CloudWatch Events V2 that uses the same underlying
+APIs and has the same architecture, but with additional features.
+Things created in one can be visible in the other for now.</p>
+<p>Both systems have a default Event bus for a single AWS account.
+A bus is a stream of events which occur for any supported service inside an
+AWS account.
+In CW Events, there is only one bus (implicit), this is not exposed.
+EventBridge can have additional event buses for your applications or third party
+applications and services.
+These can be interacted with in the same way as the default bus.</p>
+<p>In both services, you create rules and these rules pattern match events which
+occur on the buses and when they see an event which matches, they deliver
+that event to a target. Alternatively you can have schedule based rules
+which match a certain date and time or ranges of dates and times.</p>
+<p>Rules match incoming events or schedules. The rule matches an event and routes
+that event to one or more targets as you define on that rule.</p>
+<p>Architecturally at the heart of event bridge is the default account event bus.
+This is a stream of events generated by supported services within the AWS
+account. Rules are created and these are linked to a specific event bus
+or the default event bus. Once the rule completes pattern matching, the rule
+is executed and moves that event that it matched through to one or more targets.
+The events themselves are JSON structures and the data can be used by the
+targets.</p>
+<h3><a id="user-content-application-programming-interface-api-gateway" class="anchor" aria-hidden="true" href="#application-programming-interface-api-gateway"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Application Programming Interface (API) Gateway</h3>
+<ul>
+<li>A way applications or services can communicate with each other.</li>
+<li>API gateway is an AWS managed service.
+<ul>
+<li>Provides managed AWS endpoints.</li>
+<li>Can also perform authentication to prove you are who you claim.</li>
+<li>You can create an API and present it to your customers for use.</li>
+</ul>
+</li>
+<li>Allows you to create, publish, monitor, and secure APIs.</li>
+<li>Billed based on:
+<ul>
+<li>number of API calls</li>
+<li>amount of data transferred</li>
+<li>additional performance features such as caching</li>
+</ul>
+</li>
+<li>Serve as an entry point for serverless architecture.</li>
+<li>If you have on premises legacy services that use APIs, this can be integrated.</li>
+</ul>
+<p>Great during an architecture evolution because the endpoints don't change.</p>
+<ol>
+<li>Create a managed API and point at the existing monolithic application.</li>
+<li>Using API gateway allows the business to evolve along the way slowly.
+This might move some of the data to fargate and aurora architecture.</li>
+<li>Move to a full serverless architecture with DynamoDB.</li>
+</ol>
+<h3><a id="user-content-serverless" class="anchor" aria-hidden="true" href="#serverless"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Serverless</h3>
+<p>This is not one single thing, you manage few if any servers.
+This aims to remove overhead and risk as much as possible.
+Applications are a collection of small and specialized functions that do
+one thing really well and then stop.</p>
+<p>These functions are stateless and run in ephemeral environments.
+Every time they run, they obtain the data that they need, they do something
+and then optionally, they store the result persistently somehow or deliver
+the output to something else.</p>
+<p>Generally, everything is event driven. Nothing is running until it's required.
+While not being used, there should be little to no cost.</p>
+<p>Should use managed services when possible.</p>
+<p>Aim is to consume as a service whatever you can, code as little as possible,
+and use function as a service for any general purpose compute needs, and
+then use all of those building blocks together to create your application.</p>
+<h4><a id="user-content-example-of-serverless" class="anchor" aria-hidden="true" href="#example-of-serverless"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Example of Serverless</h4>
+<p>A user wants to upload videos to a website for transcoding.</p>
+<ol>
+<li>User browses to a static website that is running the uploader. The JS runs
+directly from the web browser.</li>
+<li>Third party auth provider, google in this case, authenticates via <strong>token</strong>.</li>
+<li>AWS cannot use tokens provided by third parties. <strong>Cognito</strong> is called to
+swap the third party token for AWS credentials.</li>
+<li>Service uses these temporary credentials to upload a video to S3 bucket.</li>
+<li>Bucket will generate an event once it has completed the upload.</li>
+<li>A lambda triggers to transcode the video as needed. The
+transcoder will get the original S3 bucket video location and will use
+this for its workload.</li>
+<li>Output will be added to a new transcode bucket and will put an entry into
+DynamoDB.</li>
+<li>User can interact with another Lambda to pull the media from the
+transcode bucket using the DynamoDB entry.</li>
+</ol>
+<h3><a id="user-content-simple-notification-service-sns" class="anchor" aria-hidden="true" href="#simple-notification-service-sns"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Simple Notification Service (SNS)</h3>
+<ul>
+<li>HA, Durable, PUB/SUB messaging service.</li>
+<li>Public AWS service meaning to access it, you need network connectivity
+with the Public AWS endpoints.</li>
+<li>Coordinates sending and delivering of messages up to 256KB in size.
+<ul>
+<li>Messages are not designed for large binary files.</li>
+</ul>
+</li>
+<li>SNS topics are the base entity of SNS.
+<ul>
+<li>Permissions are controlled and configuration for SNS is defined.</li>
+</ul>
+</li>
+<li>Publisher sends messages to a topic.
+<ul>
+<li>Topics have subscribers which receive messages.</li>
+</ul>
+</li>
+<li>Subscribers receive all of the messages sent to the Topic.
+<ul>
+<li>Subscribers can be HTTP and HTTPS endpoints, emails, or SQS queues.</li>
+<li>Filters can be applied to limit messages sent to subscribers.</li>
+</ul>
+</li>
+<li>Fanout allows for a single SNS topic with multiple SQS queues as subscribers.
+<ul>
+<li>Can create multiple related workflows.</li>
+<li>Allows multiple SQS queues to process the workload in slightly different
+ways.</li>
+</ul>
+</li>
+</ul>
+<p>Offers:</p>
+<ul>
+<li>Delivery Status including HTTP, Lambda, SQS</li>
+<li>Delivery retries which ensure reliable delivery</li>
+<li>HA and Scalable (Regional)</li>
+<li>SSE (server side encryption)</li>
+<li>Topics can be used cross-account via Topic Policy</li>
+</ul>
+<h3><a id="user-content-aws-step-functions" class="anchor" aria-hidden="true" href="#aws-step-functions"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS Step Functions</h3>
+<p>There are many problems with lambdas limitations that can be solved with
+a state machine. A state machine is a workflow. It has a start point, end point
+and in between there are states. States are things inside a State Machine which
+can do things. States can do things, and take in data, modify data, and output
+data.</p>
+<p>State machine is designed to perform an activity or workflow with lots of
+individual components and maintain the idea of data between those states.</p>
+<p>Maximum duration for a state machine execution is 1 year.</p>
+<p>Two types of workflow</p>
+<ul>
+<li>
+<p>Standard</p>
+<ul>
+<li>Default</li>
+<li>1 year workflow</li>
+</ul>
+</li>
+<li>
+<p>Express</p>
+<ul>
+<li>Designed for IOT or other high transaction uses</li>
+<li>5 minute workflow</li>
+<li>Provides better processing guarantees</li>
+</ul>
+</li>
+</ul>
+<p>Started via API Gateway, IOT Rules, EventBridge, Lambda. Generally used for
+back end processing.</p>
+<p>With State machines you can use a template to create and export State Machines
+once they're configured to your liking, it's called Amazon States Language or
+ASL. It's based on JSON.</p>
+<p>State machines are provided permission to interact with other AWS services via
+IAM roles.</p>
+<h4><a id="user-content-step-function-states" class="anchor" aria-hidden="true" href="#step-function-states"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Step Function States</h4>
+<p>States are the things inside a workflow, the things which occur. These states
+are available.</p>
+<ul>
+<li>Succeed and Fail
+<ul>
+<li>the process will succeed or fail.</li>
+</ul>
+</li>
+<li>Wait
+<ul>
+<li>will wait for a certain period of time</li>
+<li>will wait until specific date and time</li>
+</ul>
+</li>
+<li>Choice
+<ul>
+<li>different path is determined based on an import</li>
+</ul>
+</li>
+<li>Parallel
+<ul>
+<li>will create parallel branches based on a choice</li>
+</ul>
+</li>
+<li>Map
+<ul>
+<li>accepts a list of things</li>
+<li>for each item in that list, performs an action or set of actions based on
+that particular item.</li>
+</ul>
+</li>
+<li>Task
+<ul>
+<li>represents a single unit of work performed by the State Machine.</li>
+<li>it allows the state machine to actually do things.</li>
+<li>can be integrated with many different services such as lambda, AWS batch,
+dynamoDB, ECS, SNS, SQS, Glue, SageMaker, EMR, and lots of others.</li>
+</ul>
+</li>
+</ul>
+<h3><a id="user-content-simple-queue-service-sqs" class="anchor" aria-hidden="true" href="#simple-queue-service-sqs"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Simple Queue Service (SQS)</h3>
+<p>Public service that provides fully managed highly available message queues.</p>
+<ul>
+<li>Replication happens within a region by default.
+<ul>
+<li>Messages are guaranteed in the order they were received</li>
+<li>Provides FIFO with best effort, but no guarantee</li>
+</ul>
+</li>
+<li>Messages up to 256KB in size.
+<ul>
+<li>Should link to larger sets of data if needed.</li>
+</ul>
+</li>
+<li>Polling is checking for any messages on the queue.</li>
+<li><strong>Visibility timeout</strong>
+<ul>
+<li>The amount of time a client has to process a message in some way</li>
+<li>When a client polls and receives messages, they aren't deleted from the
+queue and are hidden for the length of this timeout.</li>
+<li>This is the amount of time that a client can wait to work on the messages.</li>
+<li>If the client does not delete the message by the end, it will reappear in
+the queue.</li>
+</ul>
+</li>
+<li><strong>Dead-letter queue</strong>
+<ul>
+<li>if a message is received multiple times but is unable to be finished, this
+puts it into a different workload to try and fix the corruption.</li>
+</ul>
+</li>
+<li>ASG can scale and lambdas can be invoked based on queue length.</li>
+<li>Standard queue
+<ul>
+<li>multi-lane HW</li>
+<li>guarantee the order and at least once delivery.</li>
+</ul>
+</li>
+<li>FIFO queue
+<ul>
+<li>single lane road with no way to overtake</li>
+<li>guarantee the order and at exactly once delivery</li>
+<li>3,000 messages p/s with batching or up to 300 messages p/s without</li>
+</ul>
+</li>
+</ul>
+<p>Billed on <strong>requests</strong> not messages. A request is a single request to SQS.
+One request can return 0 - 10 messages up to 64KB data in total.
+Since requests can return 0 messages, frequently polling a SQS Queue, makes it
+less effective.</p>
+<p>Two ways to poll</p>
+<ul>
+<li>
+<p>short (immediate) : uses 1 request and can return 0 or more messages. If the
+queue is empty, it will return 0 and try again. This hurts queues that stay
+short</p>
+</li>
+<li>
+<p>long (waitTimeSeconds) : it will wait for up to 20 seconds for messages
+to arrive on the queue. It will sit and wait if none currently exist.</p>
+</li>
+</ul>
+<p>Messages can live on SQS Queue for up to 15 days. They offer KMS encryption
+at rest. Server side encryption. Data is encrypted in transit with SQS and any
+clients.</p>
+<p>Access to a queue is based on identity policies or a queue policy. Queue
+policies only can allow access from an outside account. This is a resource policy.</p>
+<h3><a id="user-content-kinesis" class="anchor" aria-hidden="true" href="#kinesis"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Kinesis</h3>
+<ul>
+<li>Scalable streaming service. It is designed to inject data from
+lots of devices or lots of applications.</li>
+<li>Many producers send data into a Kinesis Stream.</li>
+<li>The stream can scale from low to near infinite data rates.</li>
+<li>Highly available public service by design.</li>
+<li>Streams store a 24-hour moving window of data.
+<ul>
+<li>Can be increased to 7 days.</li>
+<li>Data 24 hours + 1s is replaced by new data entering the stream.</li>
+</ul>
+</li>
+<li>Kinesis includes the storage costs within it for the amount of data
+that can be ingested during a 24 hour period. However much you ingest during
+24 hours, that's included.</li>
+<li>Multiple consumers can access data from that moving window.
+<ul>
+<li>One might look at data points once per hour</li>
+<li>Another looks at data 1 per minute.</li>
+</ul>
+</li>
+<li>Kinesis stream starts with 1 shard and expands as needed.
+<ul>
+<li>Each shard can have 1MB/s for ingestion and 2MB/s consumption.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Kinesis data records (1MB)</strong> are stored across shards and are the blocks
+of data for a stream.</p>
+<p><strong>Kinesis Data Firehose</strong> connects to a Kinesis stream. It can move the data
+from a stream onto S3 or another service.</p>
+<h3><a id="user-content-sqs-vs-kinesis" class="anchor" aria-hidden="true" href="#sqs-vs-kinesis"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>SQS vs Kinesis</h3>
+<p>Kinesis</p>
+<ul>
+<li>Large throughput or large numbers of devices</li>
+<li>Huge scale ingestion with multiple consumers</li>
+<li>Rolling window for multiple consumers</li>
+<li>Designed for data ingestion, analytics, monitoring, app clicks</li>
+</ul>
+<p>SQS</p>
+<ul>
+<li>1 thing sending messages to the queue</li>
+<li>One consumption group from that tier</li>
+<li>Allow for async communications</li>
+<li>Once the message is processed, it is deleted</li>
+</ul>
+<hr>
+<h2><a id="user-content-cdn-and-optimization" class="anchor" aria-hidden="true" href="#cdn-and-optimization"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CDN-and-Optimization</h2>
+<h3><a id="user-content-architecture-basics" class="anchor" aria-hidden="true" href="#architecture-basics"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Architecture Basics</h3>
+<ul>
+<li>CloudFront is a global object cache (CDN)</li>
+<li>Download caching only</li>
+<li>Content is cached in locations close to customers.</li>
+<li>If the content is not available on the local cache when requested, CloudFront
+will fetch the item and cache it and deliver it locally.</li>
+<li>This provides lower latency and higher throughput for customers.</li>
+<li>Can handle static and dynamic content.</li>
+<li><strong>Origin</strong> the original location of your content, can be an S3 bucket or LB.</li>
+<li><strong>Distribution</strong> the configuration unit of CloudFront.</li>
+<li><strong>Edge locations</strong> global infrastructure which hosts a cache of your data.
+<ul>
+<li>There are over 200 edge locations.</li>
+<li>They can be one or more racks in a third party server system.</li>
+<li>Normally 90% storage with some small compute.</li>
+</ul>
+</li>
+<li><strong>Regional Edge Cache</strong>
+<ul>
+<li>Larger version of an edge location.</li>
+<li>Support a number of local edge locations.</li>
+<li>Designed to hold more data to cache things which are accessed less often.</li>
+<li>Provides another layer of caching.</li>
+</ul>
+</li>
+</ul>
+<h4><a id="user-content-caching-optimization" class="anchor" aria-hidden="true" href="#caching-optimization"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Caching Optimization</h4>
+<p>Parameters can be passed on the url such as query string parameter.
+An example is <code>?language=en</code> and <code>?language=es</code></p>
+<p>Caching will cache each string parameter storing two different objects.
+You must use the same string parameters again to retrieve them. If you remove
+them and the object is not caching it will need to be fetched first.</p>
+<p>If string parameters aren't involved in the caching, you can select no
+to forward them to the origin.</p>
+<p>If the application does use query string parameters, you can use all of them for
+caching or just selected ones.</p>
+<h3><a id="user-content-aws-certificate-manager-acm" class="anchor" aria-hidden="true" href="#aws-certificate-manager-acm"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS Certificate Manager (ACM)</h3>
+<ul>
+<li>HTTP lacks encryption and is insecure</li>
+<li>HTTPS uses SSL/TLS layer of encryption added to HTTP</li>
+<li>Data is encrypted in-transit</li>
+<li>Certificates allow servers to prove their identity</li>
+<li>Signed by a trusted authority (CA).</li>
+<li>To be secure, a website generates a certificate, and has a CA sign it. The
+website then uses that certificate to prove its authenticity.</li>
+<li>ACM allows you to create, renew, and deploy certificates.</li>
+<li>Supported AWS services ONLY (CloudFront and ALB, NOT EC2)</li>
+<li>If it's not a managed service, ACM doesn't support it.</li>
+<li>CloudFront must have a trusted and signed certificate. Can't be self signed.</li>
+</ul>
+<h3><a id="user-content-origin-access-identity-oai" class="anchor" aria-hidden="true" href="#origin-access-identity-oai"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Origin Access Identity (OAI)</h3>
+<ol>
+<li>Identity can be associated with a CloudFront distribution.</li>
+<li>The edge locations gain this identity.</li>
+<li>Create or adjust the bucket policy on the S3 origin. Add an explicit allow
+for the OAI. Can remove any other explicit allows on the OAI. This leaves
+the implicit deny.</li>
+</ol>
+<p>As long as accesses are coming from the edge locations, it will know they
+are from the OAI and allow them. Any direct attempts will not use the OAI and
+will only get the implicit deny.</p>
+<p>Best practice is to create one OAI per CloudFront distribution to manage
+permissions.</p>
+<h3><a id="user-content-aws-global-accelerator" class="anchor" aria-hidden="true" href="#aws-global-accelerator"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS Global Accelerator</h3>
+<ul>
+<li>Move the AWS network closer to customers.</li>
+<li>Designed to optimize the flow of data from users to your AWS infrastructure.</li>
+<li>Generally customers who are further away from your infrastructure go through
+more internet based hops and this means a lower quality connection.</li>
+<li>Normal IP addresses are unicast IP addresses. These refer to one thing.</li>
+<li>Global Accelerator starts with 2 <strong>anycast</strong> IP address
+<ul>
+<li>Special IP address</li>
+<li>Anycast IPs allow a single IP to be in multiple locations.</li>
+<li>Traffic initially uses public internet and enters Global Accelerator at
+the closest edge location.</li>
+<li>Traffic then flows globally across the AWS global backbone network.</li>
+</ul>
+</li>
+<li>Global accelerator is a network product, can use TCP/UDP.</li>
+</ul>
+<hr>
+<h2><a id="user-content-advanced-vpc" class="anchor" aria-hidden="true" href="#advanced-vpc"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Advanced-VPC</h2>
+<h3><a id="user-content-vpc-flow-logs" class="anchor" aria-hidden="true" href="#vpc-flow-logs"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>VPC Flow Logs</h3>
+<ul>
+<li>Capture packet metadata, not packet contents.
+<ul>
+<li>Things like source IP</li>
+<li>Destination IP</li>
+<li>Packet size</li>
+<li>Anything which could be observed from the outside of the packet.</li>
+</ul>
+</li>
+<li>Capture data at various different monitoring points.
+<ul>
+<li>VPC: all interfaces in that vpc</li>
+<li>Subnets: interfaces in that subnet</li>
+<li>Interface directly</li>
+</ul>
+</li>
+<li>VPC flow logs are not realtime</li>
+<li>Destination can be S3 or CloudWatch logs</li>
+<li>Flow log inheritance is downwards starting at the VPC.</li>
+<li>RDS can use VPC flow logs</li>
+<li>The packet will always have source, then destination, then response.</li>
+</ul>
+<h3><a id="user-content-egress-only-internet-gateway" class="anchor" aria-hidden="true" href="#egress-only-internet-gateway"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Egress-Only Internet Gateway</h3>
+<ul>
+<li>IPv4 addresses are private or public</li>
+<li>NAT allows private IPs to access public networks and receive responses.</li>
+<li>NAT will not allow externally initiated connections IN.</li>
+<li>Using IPv6, all IPs are public.
+<ul>
+<li>Internet Gateway (IPv6) allows all IPs <strong>in</strong> and <strong>out</strong></li>
+</ul>
+</li>
+<li>Egress-only is <strong>outbound only</strong> for IPv6. It is exactly the same as
+NAT, only outbound only.</li>
+<li>To configure the Egress-only gateway, you must add default IPv6 route <code>::/0</code>
+added to RT with <code>eigw-id</code> as target.</li>
+</ul>
+<h3><a id="user-content-vpc-endpoints-gateway" class="anchor" aria-hidden="true" href="#vpc-endpoints-gateway"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>VPC Endpoints (Gateway)</h3>
+<p>Allow a private only resource inside a VPC or any resource inside a private
+only VPC access to S3 and DynamoDB.</p>
+<p>Normally when you want to access a public service through a VPC, you
+need infrastructure. You would create an IGW and attach it to the VPC.
+Resources inside need to be granted IP address or implement one or more
+NAT gateways which allow instances with private IP addresses to access
+these public services.</p>
+<p>When you allocate a gateway endpoint to a subnet, a prefix list is added
+to the route table. The target is the gateway endpoint.
+Any traffic destined for S3, goes via the gateway endpoint.
+The gateway endpoint is highly available for all AZs in a region by default.</p>
+<p>With a gateway endpoint you set which subnet will be used with it and
+it will configure automatically.
+A gateway endpoint is a VPC gateway object.
+Endpoint policy controls what things can be connected to by that endpoint.</p>
+<p>Gateway endpoints can only be used to access services in the same region.
+Can't access cross-region services.</p>
+<p>S3 buckets can be set to private only by allowing access ONLY from
+a gateway endpoint. For anything else, the implicit deny will apply.</p>
+<p>They are only accessible from inside that specific VPC.</p>
+<h3><a id="user-content-vpc-endpoints-interface" class="anchor" aria-hidden="true" href="#vpc-endpoints-interface"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>VPC Endpoints (Interface)</h3>
+<ul>
+<li>Provide private access to AWS Public Services.
+<ul>
+<li>Anything EXCEPT S3 and DynamoDB</li>
+</ul>
+</li>
+<li>These are not HA by default and are added to specific subnets.
+<ul>
+<li>For HA, add one endpoint, to one subnet, per AZ used in the VPC</li>
+<li>Must add one endpoint for one subnet per AZ</li>
+</ul>
+</li>
+<li>Network access controlled via security groups.</li>
+<li>You can use Endpoint policies to restrict what can be accessed with
+the endpoint.</li>
+<li>ONLY TCP and IPv4 at the moment.</li>
+<li>Behind the scenes, it uses PrivateLink.</li>
+<li>Endpoint provides a <strong>NEW</strong> service endpoint DNS
+<ul>
+<li>e.g. <code>vpce-123-xyz.sns.us-east-1.vpce.amazonaws.com</code></li>
+</ul>
+</li>
+<li>Regional DNS is one single DNS name that works whatever AZ you're using to
+access the interface endpoint. Good for simplicity and HA.</li>
+<li>Zonal DNS resolved to that one specific interface in that one specific AZ.</li>
+<li>Either of those two points of endpoints can be used by applications to
+directly and immediately utilize interface endpoints.</li>
+<li>PrivateDNS associates R53 private hosted zone with your VPC. This private
+hosted zone carries a replacement DNS record for the default service
+endpoint DNS name. It overrides the default service DNS with a new version
+that points at your interface endpoint. Enabled by default.</li>
+</ul>
+<h4><a id="user-content-gateway-endpoints-vs-interface-endpoints" class="anchor" aria-hidden="true" href="#gateway-endpoints-vs-interface-endpoints"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Gateway Endpoints vs Interface Endpoints</h4>
+<p><strong>Gateway endpoints</strong> work using prefix lists and route tables so they do not
+need changes to the applications. The application thinks it's communicating
+directly with S3 or DynamoDB and all we're doing by using a gateway endpoint
+is influencing the route that the traffic flow uses. Instead of using IGW,
+it goes via gateway endpoint and can use private IP addressing.
+<strong>highly available</strong></p>
+<p><strong>Interface Endpoints</strong> uses DNS and a private IP address for the interface
+endpoint. You can either use the endpoint specific DNS names or you can
+enable PrivateDNS which overrides the default and allows unmodified
+applications to access the services using the interface endpoint. This doesn't
+use routing and only DNS.
+<strong>not highly available</strong></p>
+<h3><a id="user-content-vpc-peering" class="anchor" aria-hidden="true" href="#vpc-peering"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>VPC Peering</h3>
+<p>Direct encrypted network link between two and only two VPCs.
+Peering connection can be in the same or cross region and in the same or
+across accounts.</p>
+<p>When you create a VPC peer, you can enable an option so that public hostnames
+of services in the peered VPC resolve to the private internal IPs. You
+can use the same DNS names if its in peered VPCs or not. If you attempt
+to resolve the public DNS hostname of an EC2 instance, it will resolve
+to the private IP address of the EC2 instance.</p>
+<p>VPCs in the same region can reference each other by using security group id.
+You can do the same efficient referencing and nesting of security groups that
+you can do if you're inside the same VPC. This is a feature that only works
+with VPC peers inside the same region.</p>
+<p>In different regions, you can utilize security groups, but you'll need to
+reference IP addresses or IP ranges. If VPC peers are in the same region,
+then you can do the logical referencing of an entire security group.</p>
+<p>VPC peering connects <strong>ONLY TWO</strong></p>
+<p>VPC Peering does not support <strong>transitive peering</strong>.
+If you want to connect 3 VPCs, you need 3 connections. You can't route
+through interconnected VPCs.</p>
+<p>VPC Peering Connections CANNOT be created with overlapping VPC CIDRs.</p>
+<hr>
+<h2><a id="user-content-hybrid-and-migration" class="anchor" aria-hidden="true" href="#hybrid-and-migration"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Hybrid-and-Migration</h2>
+<h3><a id="user-content-aws-site-to-site-vpn" class="anchor" aria-hidden="true" href="#aws-site-to-site-vpn"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS Site-to-Site VPN</h3>
+<ul>
+<li>A logical connection between a VPC and on-premise network encrypted in transit
+using IPSec, running over the public internet.</li>
+<li>This can be fully Highly Available if you design it correctly</li>
+<li>Quick to provision, less than an hour.</li>
+<li>VPNs connect VPCs and private on-prem networks.</li>
+<li>Virtual Private Gateway (VGW) is the target on one or more route tables</li>
+<li>Customer Gateway (CGW)
+<ul>
+<li>logical piece of configuration on AWS</li>
+<li>thing that configuration represents</li>
+</ul>
+</li>
+<li>VPN connection itself stores the config and links to one VGW and one CGW</li>
+<li>Speed cap on VPN with two tunnels of 1.25 Gbps (gigabits per second).
+<ul>
+<li>AWS limit, will need to check speed supported by customer router.</li>
+<li>Will be processing overhead on encrypting and decrypting data.
+At high speeds, this overhead can be significant.</li>
+</ul>
+</li>
+<li>Latency is inconsistent because it uses the public internet.</li>
+<li>Cost
+<ul>
+<li>AWS charges hourly</li>
+<li>GB transfer out cost</li>
+<li>on-premises internet connection costs</li>
+</ul>
+</li>
+<li>VPN setup of hours or less</li>
+<li>Great as a backup especially for Direct Connect (DX)</li>
+</ul>
+<h3><a id="user-content-aws-direct-connect-dx" class="anchor" aria-hidden="true" href="#aws-direct-connect-dx"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS Direct Connect (DX)</h3>
+<ul>
+<li>Port operating at a certain speed which belongs to a certain AWS account.</li>
+<li>Allocated at a DX location which is a major data center.</li>
+<li>Two speeds
+<ul>
+<li>1 Gpbs: 1000-Base-LX</li>
+<li>10 Gbps: 10GBASE-LR</li>
+</ul>
+</li>
+<li>This is a cross connect to your customer router (requires VLANS/BGP)</li>
+<li>You can connect to a partner router if extending to your location.
+<ul>
+<li>The port needs to be arranged to connect somewhere else and connect to
+your hardware.</li>
+</ul>
+</li>
+<li>This is a single fiber optic cable from the DX port to your network.</li>
+<li>VIFs are multiple virtual interfaces (VIFs) over one DX
+<ul>
+<li>Private VIF (VPC)
+<ul>
+<li>Represents one VPC</li>
+<li>Can have as many Private VIFs as you want.</li>
+</ul>
+</li>
+<li><strong>Public VIF</strong> (Public Zone Services)
+<ul>
+<li>Only public services, not public internet</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>Has one physical cable with no high availability and no encryption.
+DX Port Provisioning is likely quick, the cross-connect takes longer.
+Can take weeks or month for physical cable to be installed.
+Generally use a VPN first then bring a DX in and leave VPN as backup.</p>
+<ul>
+<li>Up to 40 Gbps with aggregation, 4 x 10 Gbps ports.</li>
+<li>It does not use public internet and provides consistently low latency.
+<ul>
+<li>Does not consume any data.</li>
+</ul>
+</li>
+</ul>
+<p>DX provides NO ENCRYPTION and needs to be managed on a per application basis.
+There is a common way around this limitation.
+The Public VIF allows connections to AWS public services. Inside the VPC we
+already have a virtual private gateway, because this is used for any private
+VIFs running over the Direct Connect. Creating a virtual private gateway
+creates end points that are located inside the AWS public zone with public
+IP addresses. These end points have already been created and they already
+exist. We can create a VPN and instead of using the public internet as the
+transit network, you can use the public VIF running over Direct Connect.</p>
+<p>You run an IPSEC VPN over the public VIF, over the Direct Connect connection,
+you get all of the benefits of Direct Connect such as high speeds, and all
+the benefits of IPSEC encryption.</p>
+<h3><a id="user-content-aws-transit-gateway-tgw" class="anchor" aria-hidden="true" href="#aws-transit-gateway-tgw"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS Transit Gateway (TGW)</h3>
+<ul>
+<li>Network transit hub to connect VPCs to on premises networks</li>
+<li>Significantly reduces network complexity.
+<ul>
+<li>Supports transitive routing. No need to create a mesh topology.</li>
+</ul>
+</li>
+<li>Single network gateway object which makes it HA and scalable.</li>
+<li>Create attachments to allow Transit Gateway to connect to other network objects.
+<ul>
+<li>VPC attachments</li>
+<li>Site to Site VPN attachments</li>
+<li>Direct Connect attachments</li>
+</ul>
+</li>
+<li>VPC attachments are configured with a subnet in each AZ where service
+is required.</li>
+<li>Can be used to create global networks.
+<ul>
+<li>You can use these for cross-region peering attachments.</li>
+</ul>
+</li>
+<li>Can share between accounts using AWS RAM</li>
+</ul>
+<h3><a id="user-content-storage-gateway" class="anchor" aria-hidden="true" href="#storage-gateway"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Storage Gateway</h3>
+<ul>
+<li>Hybrid Storage Virtual Application (On-premise)
+<ul>
+<li>Can be run inside AWS as part of certain disaster recovery scenarios</li>
+<li>Allows for migration of existing infrastructure into AWS slowly.</li>
+</ul>
+</li>
+<li>Tape Gateway (VTL) Mode
+<ul>
+<li>Virtual Tapes are stored on S3</li>
+</ul>
+</li>
+<li>File Mode (SMB and NFS)
+<ul>
+<li>File Storage Backed by S3 Objects</li>
+</ul>
+</li>
+<li>Volume Mode (Gateway Stored)
+<ul>
+<li>Block Storage backed by S3 and EBS</li>
+<li>Great for disaster recovery</li>
+<li>Data is kept locally</li>
+<li>Awesome for migrations</li>
+</ul>
+</li>
+<li>Volume Mode (Cache Mode)
+<ul>
+<li>Data as added to gateway is not stored locally.</li>
+<li>Backup to EBS Snapshots</li>
+<li>Primarily stored on AWS</li>
+<li>Great for limited local storage capacity.</li>
+</ul>
+</li>
+</ul>
+<h3><a id="user-content-snowball--edge--snowmobile" class="anchor" aria-hidden="true" href="#snowball--edge--snowmobile"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Snowball / Edge / Snowmobile</h3>
+<p>Designed to move large amounts of data IN and OUT of AWS.
+Physical storage the size of a suitcase or truck.
+Ordered from AWS, use, then return.</p>
+<h4><a id="user-content-snowball" class="anchor" aria-hidden="true" href="#snowball"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Snowball</h4>
+<ul>
+<li>Any data on Snowball uses KMS at rest encryption.</li>
+<li>1 Gbps or 10 Gbps connection</li>
+<li>50TB or 80TB Capacity.
+<ul>
+<li>10TB to 10PB of data is economical range.</li>
+<li>Good for multiple locations</li>
+</ul>
+</li>
+<li>No compute</li>
+</ul>
+<h4><a id="user-content-snowball-edge" class="anchor" aria-hidden="true" href="#snowball-edge"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Snowball Edge</h4>
+<ul>
+<li>Includes both storage and compute</li>
+<li>Larger capacity vs snowball.</li>
+<li>Faster networking over Snowball
+<ul>
+<li>10 Gbps or up to 100 Gbps</li>
+</ul>
+</li>
+<li>Three types of Snowball Edge
+<ul>
+<li>Storage optimized
+<ul>
+<li>80TB storage, 24 vCPU, 32 GiB RAM</li>
+<li>(with EC2) includes 1TB SSD</li>
+</ul>
+</li>
+<li>Compute optimized
+<ul>
+<li>100TB storage, 7.68 GB NVME (fast PCI bus storage),52 vCPU, 208 GiB RAM</li>
+</ul>
+</li>
+<li>Compute with GPU
+<ul>
+<li>Same as compute, but with GPU</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4><a id="user-content-snowmobile" class="anchor" aria-hidden="true" href="#snowmobile"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Snowmobile</h4>
+<p>Portable data center within a shipping container on a truck.
+This is a special order and is not available in high volume.
+Ideal for single location where 10 PB+ is required.
+Max is 100 PB per snowmobile.</p>
+<h3><a id="user-content-aws-directory-service" class="anchor" aria-hidden="true" href="#aws-directory-service"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS Directory Service</h3>
+<p>Directories stores objects, users, groups, computers, servers, file shares with
+a structure called a domain / tree. Multiple trees can be grouped into a forest.</p>
+<p>Devices can join a directory so laptops, desktops, and servers can all have
+a centralized management and authentication. You can sign into multiple
+devices with the same username and password.</p>
+<p>One common directory is <strong>Active Directory</strong> by Microsoft and its full name is
+<strong>Microsoft Active Directory Domain Services</strong> or AD DS.</p>
+<ul>
+<li>AWS managed implementation.</li>
+<li>Runs within a VPC as a private service.</li>
+<li>Provides HA by deploying into multiple AZs.</li>
+<li>Certain services in AWS need a directory, Amazon Workspaces.</li>
+<li>To join EC2 instances to a domain you need a directory.</li>
+<li>Can be isolated inside AWS only or integrated with existing on-prem system.</li>
+<li>Connect Mode allows you to proxy back to on-premises.</li>
+</ul>
+<h4><a id="user-content-directory-modes" class="anchor" aria-hidden="true" href="#directory-modes"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Directory Modes</h4>
+<ul>
+<li><strong>Simple AD</strong>: should be default. Designed for simple requirements.</li>
+<li><strong>Microsoft AD</strong>: is anything with Windows or if it needs a trust relationship
+with on-prem. This is not an emulation or adjusted by AWS.</li>
+<li><strong>AD Connector</strong>: Use AWS services without storing any directory info in the
+cloud, it proxies to your on-prem directory.</li>
+</ul>
+<h3><a id="user-content-aws-datasync" class="anchor" aria-hidden="true" href="#aws-datasync"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS DataSync</h3>
+<ul>
+<li>Data transfer service TO and FROM AWS.</li>
+<li>This is used for migrations or for large amounts of data processing transfers.</li>
+<li>Designed to work at huge scales. Each agent can handle 10 Gbps and each job
+can handle 50 million files.</li>
+<li>Transfers metadata and timestamps</li>
+<li>Each agent is about 100 TB per day.</li>
+<li>Can use bandwidth limiters to avoid customer impact</li>
+<li>Supports incremental and scheduled transfer options</li>
+<li>Compression and encryption in transit is also supported</li>
+<li>Has built in data validation and automatic recovery from transit errors.</li>
+<li>AWS service integration with S3, EFS, FSx for Windows servers.</li>
+<li>Pay as you use product.</li>
+</ul>
+<h4><a id="user-content-aws-datasync-components" class="anchor" aria-hidden="true" href="#aws-datasync-components"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS DataSync Components</h4>
+<ul>
+<li>Task
+<ul>
+<li>job within datasync</li>
+<li>defines what is being synced how quickly</li>
+<li>defines two locations involved in the job</li>
+</ul>
+</li>
+<li>Agent
+<ul>
+<li>software to read and write to on prem such as NFS or SMB</li>
+<li>used to pull data off that store and move into AWS or vice versa</li>
+</ul>
+</li>
+<li>Location
+<ul>
+<li>every task has two locations <code>FROM</code> and <code>TO</code></li>
+<li>example locations:
+<ul>
+<li>network file systems (NFS), common in Linux or Unix</li>
+<li>server message block (SMB), common in Windows environments</li>
+<li>AWS storage services (EFS, FSx, and S3)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3><a id="user-content-fsx-for-windows-file-server" class="anchor" aria-hidden="true" href="#fsx-for-windows-file-server"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>FSx for Windows File Server</h3>
+<ul>
+<li>Fully managed native windows file servers/shares</li>
+<li>Designed for integration with Windows environments.
+<ul>
+<li>native Windows file system, not emulated server</li>
+</ul>
+</li>
+<li>Integrates with Directory Service or Self-Managed AD</li>
+<li>Can be used in <strong>Single</strong> or <strong>Multi-AZ</strong> within a VPC.
+<ul>
+<li>This controls the network interfaces that are available.</li>
+<li>Single mode use replication in the AZ to ensure resiliency.</li>
+</ul>
+</li>
+<li>Can perform full range of different backups
+<ul>
+<li>Client side and AWS side</li>
+<li>Can perform automatic and on-demand backups.</li>
+</ul>
+</li>
+<li>File systems can be access using VPC, Peering, VPN, Direct Connect. Native
+windows filesystem or Directory Services.</li>
+</ul>
+<h4><a id="user-content-words-to-look-for" class="anchor" aria-hidden="true" href="#words-to-look-for"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Words to look for</h4>
+<ul>
+<li>VSS: User Driven Restores</li>
+<li>Native File System (NFS) accessible over SMB</li>
+<li>Windows permissions model</li>
+<li>Product supports DFS, scale out file share.</li>
+<li>Managed service, no file server admin</li>
+<li>Integrates with DS and your own directory.</li>
+</ul>
+<hr>
+<h2><a id="user-content-security-deployment-operations" class="anchor" aria-hidden="true" href="#security-deployment-operations"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Security-Deployment-Operations</h2>
+<h3><a id="user-content-aws-secrets-manager" class="anchor" aria-hidden="true" href="#aws-secrets-manager"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS Secrets Manager</h3>
+<ul>
+<li>Share functionality with parameter store. Sometimes both are appropriate.</li>
+<li>Designed specifically for secrets, passwords, API keys.</li>
+<li>Usable via Console, CLI, API, or SDK (integration)</li>
+<li>Supports the automatic rotation of secrets using Lambda.</li>
+<li>Directly integrates with RDS and a limited set of AWS products. If lambda
+is invoked and changes a secret, the password can automatically change in RDS.</li>
+<li>Secrets are encrypted at rest.</li>
+<li>Integrates with IAM, can use IAM permissions to control access to secrets.</li>
+</ul>
+<h4><a id="user-content-secrets-manager-example" class="anchor" aria-hidden="true" href="#secrets-manager-example"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Secrets Manager Example</h4>
+<ol>
+<li>The Secrets Manager SDK retrieves database credentials.</li>
+<li>SDK uses IAM credentials to retrieve the secrets.</li>
+<li>Application uses the secrets to access the database.</li>
+<li>Periodically, a lambda function is invoked to rotate the secrets.</li>
+<li>The Lambda uses an execution role to get permissions.</li>
+</ol>
+<p>Secrets are secured using KMS so you never risk any leakage via physical access
+to the AWS hardware and KMS ensures role separation.</p>
+<h3><a id="user-content-aws-shield-and-waf-web-application-firewall" class="anchor" aria-hidden="true" href="#aws-shield-and-waf-web-application-firewall"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS Shield and WAF (Web Application Firewall)</h3>
+<p>Provides against DDoS attacks with AWS resources. This is a denial of
+service attack. Normally not possible to block them by using individual
+IP addresses. Without detailed analysis, the traffic looks like normal
+requests to your website.</p>
+<ul>
+<li>
+<p>Shield Standard</p>
+<ul>
+<li>Free with Route53 and CloudFront as default</li>
+<li>Provides layer 3 and layer 4 protection against DDoS attacks.</li>
+</ul>
+</li>
+<li>
+<p>Shield advanced</p>
+<ul>
+<li>$3000 per month</li>
+<li>Includes EC2, ELB, CloudFront, Global Acceleration and R53</li>
+<li>Provides access to DDoS advanced response team and financial insurance
+against increased costs.</li>
+</ul>
+</li>
+<li>
+<p>WAF (web application firewall)</p>
+<ul>
+<li>Layer 7 firewall (HTTP/s) firewall</li>
+<li>Protects against complex layer 7 attacks:
+<ul>
+<li>SQL injections</li>
+<li>cross-site scripting</li>
+<li>geo blocks</li>
+<li>rate awareness</li>
+</ul>
+</li>
+<li>WEBACL integrated with Load Balancers, API gateways, and CloudFront.
+<ul>
+<li>Rules are added to WEBACL and evaluated when traffic arrives.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4><a id="user-content-example-of-architecture" class="anchor" aria-hidden="true" href="#example-of-architecture"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Example of Architecture</h4>
+<p>Shield standard automatically looks at the data before any data reaches
+past Route53.
+The user is directed to the closest CloudFront location. Again, shield
+standard looks at the data again before it moves on.</p>
+<p>WAF Rules are defined and included in a WEBACL which is associated to a
+cloud front distribution and deployed to the edge.</p>
+<p>Shield advanced can then intercept traffic when it reaches the load balancer.
+Once the data reaches the VPC, it has been filtered at Layer 3, 4, and 7
+already.</p>
+<p>Layer 7 filtering is only provided by WAF.</p>
+<h3><a id="user-content-cloudhsm" class="anchor" aria-hidden="true" href="#cloudhsm"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CloudHSM</h3>
+<p>KMS is the key management service within AWS. It is used for encryption within
+AWS and it integrates with other AWS products. Can generate keys, manage
+keys, and can integrate for encryption. The problem is this is a shared
+service. You're using a service which other accounts within AWS also use.
+Although the permissions are strict, AWS still does manage the hardware for KMS.
+KMS is a hardware security module or HSM. These are industry standard pieces
+of hardware which are designed to manage keys and perform cryptographic
+operations.</p>
+<p>You can run your own HSM on premise. Cloud HSM is a true "single tenant"
+hardware security module (HSM) that's hosted within the AWS cloud.
+AWS provisions the HW, but it is impossible for them to help. There is no way
+to recover data from them if access is lost.</p>
+<p>Fully FIPS 140-2 Level 3 (KSM is L2 overall, but some is L3)
+IF you require level 3 overall, you MUST use CloudHSM.</p>
+<p>KSM all actions are performed with AWS CLI and IAM roles.</p>
+<p>HSM will not integrate with AWS by design and uses industry standard APIs.</p>
+<ul>
+<li>PKCS#11</li>
+<li>Java Cryptography Extensions (JCE)</li>
+<li>Microsoft CryptoNG (CNG) libraries</li>
+</ul>
+<p>KMS can use CloudHSM as a custom key store, CloudHSM integrates with KMS.</p>
+<p>HSM is not highly available and runs within one AZ. To be HA, you need at least
+two HSM devices and one in each AZ you use. Once HSM is in a cluster, they
+replicate all policies in sync automatically.</p>
+<p>HSM needs an endpoint in the subnet of the VPC to allow resources access
+to the cluster.</p>
+<p>AWS has no access to the HSM appliances which store the keys.</p>
+<h4><a id="user-content-cloud-hsm-use-cases" class="anchor" aria-hidden="true" href="#cloud-hsm-use-cases"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Cloud HSM Use Cases</h4>
+<ul>
+<li>No native AWS integration with AWS products. You can't use S3 SSE with
+CloudHSM.</li>
+<li>Can offload the SSL/TLS processing from webservers. CloudHSM
+is much more efficient to do these encryption processes.</li>
+<li>Oracle Databases can use CloudHSM to enable transparent data encryption (TDE)</li>
+<li>Can protect the private keys an issuing certificate authority.</li>
+<li>Anything that needs to interact with non AWS products.</li>
+</ul>
+<hr>
+<h2><a id="user-content-nosql-and-dynamodb" class="anchor" aria-hidden="true" href="#nosql-and-dynamodb"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>NoSQL-and-DynamoDB</h2>
+<h3><a id="user-content-dynamodb-architecture" class="anchor" aria-hidden="true" href="#dynamodb-architecture"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DynamoDB Architecture</h3>
+<p>NoSQL Database as a Service (DBaaS)</p>
+<ul>
+<li>Wide column Key/Value database.</li>
+<li>Not like RDS which is a Database Server as a Product.
+<ul>
+<li>This is only the database.</li>
+</ul>
+</li>
+<li>Capacity can be provisioned or use on-demand mode</li>
+<li>Highly resilient across AZs and optionally globally resilient.</li>
+<li>Data is replicated across multiple storage nodes by default.</li>
+<li>Really fast, single digit millisecond access to data.</li>
+<li>Supports backups with point in time recovery and encryption at rest.</li>
+<li>Allows event-driven integration. Do things when data changes.</li>
+</ul>
+<h4><a id="user-content-dynamo-db-tables" class="anchor" aria-hidden="true" href="#dynamo-db-tables"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Dynamo DB Tables</h4>
+<ul>
+<li><strong>Table</strong> a grouping of items which share the same primary key.</li>
+<li><strong>Items</strong> within a table are how you manage the data.
+<ul>
+<li>There is no limit to the number of items in a table.</li>
+</ul>
+</li>
+<li>Two types of primary key:
+<ul>
+<li>Simple (Partition)</li>
+<li>Composite (Partition and Sort)</li>
+</ul>
+</li>
+<li>Every item in the table needs a unique primary key.</li>
+<li>Attributes may or may not be there. This is not necessary.</li>
+<li>Items can be at most 400KB in size. This includes the primary key and
+attributes.</li>
+</ul>
+<p>In DynamoDB, capacity means speed. If you choose on-demand capacity model
+you don't have to worry about capacity. You only pay for the operations
+for the table.
+If you choose provisioned capacity, you must set this on a per table basis.</p>
+<p>Capacity is set per WCU or RCU</p>
+<p>1 WCU means you can write 1KB per second to that table
+1 RCU means you can read 4KB per second for that table</p>
+<h4><a id="user-content-dynamo-db-backups" class="anchor" aria-hidden="true" href="#dynamo-db-backups"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Dynamo DB Backups</h4>
+<p><strong>On-demand Backups</strong>: Similar to manual RDS snapshots. Full backup of the table
+that is retained until you manually remove that backup. This can be used to
+restore data in the same region or cross-region. You can adjust indexes, or
+adjust encryption settings.</p>
+<p><strong>Point-in-time Recovery</strong>: Must be enabled on each table and is off by
+default. This allows continuous record of changes for 35 days to allow you to
+replay any point in that window to a 1 second granularity.</p>
+<h4><a id="user-content-dynamo-db-considerations" class="anchor" aria-hidden="true" href="#dynamo-db-considerations"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Dynamo DB Considerations</h4>
+<ul>
+<li>NoSQL, you should jump towards DynamoDB.</li>
+<li>Relational data, this is NOT DynamoDB.</li>
+<li>If you see key value and DynamoDB is an answer, this is likely the proper
+choice.</li>
+</ul>
+<p>Access to Dynamo is from the console, CLI, or API. You don't have SQL access.</p>
+<p>Billing based on:</p>
+<ul>
+<li>RCU and WCU</li>
+<li>Storage on that table</li>
+<li>Additional features on that table</li>
+</ul>
+<p>Can purchase reserved capacity with a cheaper rate for a longer term commit.</p>
+<h3><a id="user-content-dynamodb-operations-consistency-and-performance" class="anchor" aria-hidden="true" href="#dynamodb-operations-consistency-and-performance"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DynamoDB Operations, Consistency, and Performance</h3>
+<h4><a id="user-content-dynamodb-reading-and-writing" class="anchor" aria-hidden="true" href="#dynamodb-reading-and-writing"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DynamoDB Reading and Writing</h4>
+<p><strong>On-Demand</strong>: Unknown or unpredictable load on a table. This is also good
+for as little admin overhead as possible. Pay a price per million
+Read or Write units. This is as much as 5 times the price as provisioned.</p>
+<p><strong>Provisioned</strong>: RCU and WCU set on a per table basis.</p>
+<p>Every operation consumes at least 1 RCU/WCU</p>
+<p>1 RCU = 1 x 4KB read operation per second. This rounds up.
+1 WCU = 1 x 1KB write operation per second.</p>
+<p>Every single table has a WCU and RCU burst pool. This is 500 seconds
+of RCU or WCU as set by the table.</p>
+<h4><a id="user-content-query" class="anchor" aria-hidden="true" href="#query"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Query</h4>
+<p>You have to pick one Partition Key (PK) value to start.</p>
+<p>The PK can be the sensor unit, the Sort Key (SK) can be the day of the
+week you want to look at.</p>
+<p>Query accepts a single PK value and <strong>optionally</strong> a SK or range.
+Capacity consumed is the size of all returned items. Further filtering
+discards data, but capacity is still consumed.</p>
+<p>In this example you can only query for one weather station.</p>
+<p>If you query a PK it can return all fields items that match. It is always
+more efficient to pull as much data as needed per query to save RCU.</p>
+<p>You have to query for at least one item of PK and are charged for the
+response of that query operation.</p>
+<p>If you filter data and only look at one attribute, you will still be
+charged for pulling all the attributes against that query.</p>
+<h4><a id="user-content-scan" class="anchor" aria-hidden="true" href="#scan"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Scan</h4>
+<p>Least efficient when pulling data from Dynamo, but the most flexible.</p>
+<p>Scan moves through the table item by item consuming the capacity
+of every item. Even if you consume less than the whole table, it will
+charge based on that. It adds up all the values scanned and will charge
+rounding up.</p>
+<h4><a id="user-content-dynamodb-consistency-model" class="anchor" aria-hidden="true" href="#dynamodb-consistency-model"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DynamoDB Consistency Model</h4>
+<p><strong>Eventually</strong> Consistent: easier to implement and scales better
+<strong>Strongly (Immediately)</strong> Consistent: more costly to achieve</p>
+<p>Every piece of data is replicated between storage nodes. There is one
+Leader storage node and every other node follows.</p>
+<p>Writes are always directed to the <strong>leader node</strong>. Once the leader
+is complete, it is <strong>consistent</strong>. It then starts the process of replication.
+This typically takes milliseconds and assumes the lack of any faults on the
+storage nodes.</p>
+<p>Eventual consistent could lead to stale data if a node is checked before
+replication completes. You get a discount for this risk.</p>
+<p>A strongly consistent read always uses the leader node and is less
+scalable.</p>
+<p>Not every application can tolerate eventual consistency. If you have a stock
+database or medical information, you must use strongly consistent reads.
+If you can tolerate the cost savings you can scale better.</p>
+<h4><a id="user-content-wcu-example-calculation" class="anchor" aria-hidden="true" href="#wcu-example-calculation"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>WCU Example Calculation</h4>
+<ul>
+<li>Store 10 items per second with 2.5K average size per item.</li>
+<li>Calculate WCU per item, round up, then multiply by average per second.</li>
+<li>(2.5 KB / 1 KB) = 3 * 10 p/s = 30 WCU</li>
+</ul>
+<h4><a id="user-content-rcu-example-calculation" class="anchor" aria-hidden="true" href="#rcu-example-calculation"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>RCU Example Calculation</h4>
+<ul>
+<li>Retrieve 10 items per second with 2.5K average size per item.</li>
+<li>Calculate RCU per item, round up, then multiply by average per second.</li>
+<li>(2.5 KB / 4 KB) = 1 * 10 p/s = 10 RCU for strongly consistent.
+<ul>
+<li>5 RCU for eventually consistent.</li>
+</ul>
+</li>
+</ul>
+<h3><a id="user-content-dynamodb-streams-and-triggers" class="anchor" aria-hidden="true" href="#dynamodb-streams-and-triggers"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DynamoDB Streams and Triggers</h3>
+<p>DynamoDB stream is a time ordered list of changes to items in a DynamoDB
+table. A stream is a 24 hour rolling window of the changes.
+It uses Kinesis streams on the backend.</p>
+<p>This is enabled on a per table basis. This records</p>
+<ul>
+<li>Inserts</li>
+<li>Updates</li>
+<li>Deletes</li>
+</ul>
+<p>Different view types influence what is in the stream.</p>
+<p>There are four view types that it can be configured with:</p>
+<ul>
+<li>KEYS_ONLY : only shows the item that was modified</li>
+<li>NEW_IMAGE : shows the final state for that item</li>
+<li>OLD_IMAGE : shows the initial state before the change</li>
+<li>NEW_AND_OLD_IMAGES : shows both before and after the change</li>
+</ul>
+<p>Pre or post change state might be empty if you use
+<strong>insert</strong> or <strong>delete</strong></p>
+<h4><a id="user-content-trigger-concepts" class="anchor" aria-hidden="true" href="#trigger-concepts"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Trigger Concepts</h4>
+<p>Allow for actions to take place in the event of a change in data</p>
+<p>Item change generates an event that contains the data which
+was changed. The specifics depend on the view type.
+The action is taken using that data. This will combine the
+capabilities of stream and lambda. Lambda will complete some compute based on
+this trigger.</p>
+<p>This is great for reporting and analytics in the event of changes such as
+stock levels or data aggregation.
+Good for data aggregation for stock or voting apps.
+This can provide messages or notifications and eliminates the
+need to poll databases.</p>
+<h3><a id="user-content-dynamodb-local-lsi-and-global-gsi-secondary-indexes" class="anchor" aria-hidden="true" href="#dynamodb-local-lsi-and-global-gsi-secondary-indexes"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DynamoDB Local (LSI) and Global (GSI) Secondary Indexes</h3>
+<ul>
+<li>Great for improving data retrieval in DynamoDB.</li>
+<li>Query can only work on 1 PK value at a time and optionally a single
+or range of SK values.</li>
+<li>Indexes are a way to provide an alternative view on table data.</li>
+<li>You have the ability to choose which attributes are projected
+to the table.</li>
+</ul>
+<h4><a id="user-content-local-secondary-indexes-lsi" class="anchor" aria-hidden="true" href="#local-secondary-indexes-lsi"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Local Secondary Indexes (LSI)</h4>
+<ul>
+<li>Choose alternative sort key with the same partition key on base table data.
+<ul>
+<li>If item does not have sort key it will not show on the table.</li>
+</ul>
+</li>
+<li>These must be created with a base table in the beginning.
+<ul>
+<li>This cannot be added later.</li>
+</ul>
+</li>
+<li>Maximum of 5 LSIs per base table.</li>
+<li>Uses the same partition key, but different sort key.</li>
+<li>Shares the RCU and WCU with the table.</li>
+<li>It makes a smaller table and makes <strong>scan</strong> operates easier.</li>
+<li>In regards to Attributes, you can use:
+<ul>
+<li>ALL</li>
+<li>KEYS_ONLY</li>
+<li>INCLUDE</li>
+</ul>
+</li>
+</ul>
+<h4><a id="user-content-global-secondary-index-gsi" class="anchor" aria-hidden="true" href="#global-secondary-index-gsi"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Global Secondary Index (GSI)</h4>
+<ul>
+<li>Can be created at any time and much more flexible.</li>
+<li>There is a default limit of 20 GSIs for each table.</li>
+<li>Allows for alternative PK and SK.</li>
+<li>GSI will have their own RCU and WCU allocations.</li>
+<li>You can then choose which attributes are included in this table.</li>
+<li>GSIs are <strong>always</strong> eventually consistent. Replication between
+base and GSI is Async</li>
+</ul>
+<h4><a id="user-content-lsi-and-gsi-considerations" class="anchor" aria-hidden="true" href="#lsi-and-gsi-considerations"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>LSI and GSI Considerations</h4>
+<ul>
+<li>Must be careful which projections are used to manage capacity.</li>
+<li>If you don't project a specific attribute, then you require the attribute when
+querying data, it will then fetch the data later in an inefficient way.</li>
+<li>This means you should try to plan what will be used on the front.</li>
+</ul>
+<p><strong>GSI as default</strong> and only use LSI when <strong>strong consistency</strong> is required</p>
+<p>Indexes are designed when data is in a base table needs an alternative
+access pattern. This is great for a security team or data science team
+to look at other attributes from the original purpose.</p>
+<h3><a id="user-content-dynamodb-global-tables" class="anchor" aria-hidden="true" href="#dynamodb-global-tables"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DynamoDB Global Tables</h3>
+<ul>
+<li>Global tables provide multi-master cross-region replication.
+<ul>
+<li>All tables are the same.</li>
+</ul>
+</li>
+<li>Tables are created in multiple AWS regions. In one of the tables, you
+configure the links between all of the tables.</li>
+<li>DynamoDB will enable replication between all of the tables.
+<ul>
+<li>Tables become table replicas.</li>
+</ul>
+</li>
+<li>Between the tables, <strong>last writer wins</strong> in conflict resolution.
+<ul>
+<li>DynamoDB will pick the most recent write and replicate that.</li>
+</ul>
+</li>
+<li>Reads and Writes can occur to any region and are replicated within a second.</li>
+<li>Strongly Consistent Reads <strong>only</strong> in the same region as writes.
+<ul>
+<li>Application should allow for eventual consistency where data may be stale.</li>
+<li>Replication is generally sub-second and depends on the region load.</li>
+</ul>
+</li>
+<li>Provides Global HA and disaster recovery or business continuity easily.</li>
+</ul>
+<h3><a id="user-content-dynamodb-accelerator-dax" class="anchor" aria-hidden="true" href="#dynamodb-accelerator-dax"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DynamoDB Accelerator (DAX)</h3>
+<p>This is an in memory cache for Dynamo.</p>
+<p><strong>Traditional Cache</strong>: The application needs to access some data and checks
+the cache. If the cache doesn't have the data, this is known as a cache miss.
+The application then loads directly from the database. It then updates the
+cache with the new data. Subsequent queries will load data from the cache as
+a cache hit and it will be faster</p>
+<p><strong>DAX</strong>: The application instance has DAX SDK added on. DAX and dynamoDB are one
+in the same. Application uses DAX SDK and makes a single call for the data which
+is returned by DAX. If DAX has the data, then the data is returned directly. If
+not it will talk to Dynamo and get the data. It will then cache it for future
+use. The benefit of this system is there is only one set of API calls using
+one SKD. It is tightly integrated and much less admin overhead.</p>
+<h4><a id="user-content-dax-architecture" class="anchor" aria-hidden="true" href="#dax-architecture"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DAX Architecture</h4>
+<p>This runs from within a VPC and is designed to be deployed to multiple
+AZs in that VPC. Must be deployed across AZs to ensure it is highly available.</p>
+<p>DAX is a cluster service where nodes are placed into different AZs. There is
+a <strong>primary node</strong> which is the read and write note. This replicates out to
+other nodes which are <strong>replica nodes</strong> and function as read replicas. With this
+architecture, we have an EC2 instance running an application and the DAX
+SDK. This will communicate with the cluster. On the other side, the cluster
+communicates with DynamoDB.</p>
+<p>DAX maintains two different caches. First is the <strong>item cache</strong> and this caches
+individual items which are retrieved via the <strong>GetItem</strong> or <strong>BatchGetItem</strong>
+operation. These operate on single items and must specify the items partition
+or sort key.</p>
+<p>There is a <strong>query cache</strong> which holds data and the parameters used for the
+original query or scan. Whole query or scan operations can be rerun
+and return the same cached data.</p>
+<p>Every DAX cluster has an endpoint which will load balance across the cluster.
+If data is retrieved from DAX directly, then it's called a cache hit and the
+results can be returned in microseconds.</p>
+<p>Any cache misses, so when DAX has to consult DynamoDB, these are generally
+returned in single digit milliseconds. Now in writing data to DynamoDB,
+DAX can use write-through caching, so that data is written into DAX at the
+same time as being written into the database.</p>
+<p>If a cache miss occurs while reading, the data is also written to the primary
+node of the cluster and the data is retrieved. And then it's replicated from
+the primary node to the replica nodes.</p>
+<p>When writing data to DAX, it can use write-through. Data is written to the
+database, then written to DAX.</p>
+<h4><a id="user-content-dax-considerations" class="anchor" aria-hidden="true" href="#dax-considerations"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DAX Considerations</h4>
+<ul>
+<li>Primary node which writes and Replicas which support read operations.</li>
+<li>Nodes are HA, if the primary node fails there will be an election and
+secondary nodes will be made primary.</li>
+<li>In-memory cache allows for much faster read operations and significantly
+reduced costs. If you are performing the same set of read operations on the same
+set of data over and over again, you can achieve performance improvements
+by implementing DAX and caching those results.</li>
+<li>With DAX you can scale up or scale out.</li>
+<li>DAX supports write-through. If you write data to DynamoDB, you can
+use the DAX SDK. DAX will handle that data being committed to DynamoDB
+and also storing that data inside the cache.</li>
+<li>DAX is not a public service and is deployed within a VPC. Anything
+that uses that data many times will benefit from DAX.</li>
+<li>Any questions which talk about caching with DynamoDB, assume it is DAX.</li>
+</ul>
+<h3><a id="user-content-amazon-athena" class="anchor" aria-hidden="true" href="#amazon-athena"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Amazon Athena</h3>
+<ul>
+<li>You can take data stored in S3 and perform Ad-hoc queries on data. Pay
+only for the data consumed.</li>
+<li>Start off with structured, semi-structured and even unstructured data that is
+stored in its raw form on S3.</li>
+<li>Athena uses <strong>schema-on-read</strong>, the original data is never changed
+and remains on S3 in its original form.</li>
+<li>The schema which you define in advance, modifies data in flight when its read.</li>
+<li>Normally with databases, you need to make a table and then load the data in.</li>
+<li>With Athena you create a schema and load data on this schema on the fly in
+a relational style way without changing the data.</li>
+<li>The output of a query can be sent to other services and can be
+performed in an event driven fully serverless way.</li>
+</ul>
+<h4><a id="user-content-athena-explained" class="anchor" aria-hidden="true" href="#athena-explained"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Athena Explained</h4>
+<p>The source data is stored on S3 and Athena can read from this data.
+In Athena you are defining a way to get the original data and defining
+how it should show up for what you want to see.</p>
+<p>Tables are defined in advance in a data catalog and data is projected
+through when read. It allows SQL-like queries on data without transforming
+the data itself.</p>
+<p>This can be saved in the console or fed to other visualization tools.</p>
+<p>You can optimize the original data set to reduce the amount of space uses
+for the data and reduce the costs for querying that data.</p>
+
+
+</article>
+      </div>
+  </div>
+
+
+</div>
+    <div class="flex-shrink-0 col-12 col-md-3">
+            
+
+      <div class="BorderGrid BorderGrid--spacious" data-pjax>
+        <div class="BorderGrid-row hide-sm hide-md">
+          <div class="BorderGrid-cell">
+            <h2 class="mb-3 h4">About</h2>
+
+    <p class="f4 mt-3">
+      Personal notes for SAA-C02 test from: <a href="https://learn.cantrill.io" rel="nofollow">https://learn.cantrill.io</a>
+
+    </p>
 
    
