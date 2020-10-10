@@ -6,4 +6,4 @@ These are my personal notes from Adrian Cantrill's (SAA-C02) course. Learning Ai
 
 Table of Contents 
 
-https://github.com/aireddy73/AWS-SAA-C02-Course#Cloud-Computing-Fundamentals
+https://github.com/aireddy73/SAA-C02#Cloud-Computing-Fundamentals
