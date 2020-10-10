@@ -5447,23 +5447,3 @@ the data itself.</p>
 for the data and reduce the costs for querying that data.</p>
 
 
-</article>
-      </div>
-  </div>
-
-
-</div>
-    <div class="flex-shrink-0 col-12 col-md-3">
-            
-
-      <div class="BorderGrid BorderGrid--spacious" data-pjax>
-        <div class="BorderGrid-row hide-sm hide-md">
-          <div class="BorderGrid-cell">
-            <h2 class="mb-3 h4">About</h2>
-
-    <p class="f4 mt-3">
-      Personal notes for SAA-C02 test from: <a href="https://learn.cantrill.io" rel="nofollow">https://learn.cantrill.io</a>
-
-    </p>
-
-   
