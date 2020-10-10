@@ -8,7 +8,7 @@ Table of Contents
 
 https://github.com/aireddy73/SAA-C02#Cloud-Computing-Fundamentals
 
-# Cloud-Computing-Fundamentals
+
 <ul>
 <li><a href="#Cloud-Computing-Fundamentals">Cloud-Computing-Fundamentals</a></li>
 <li><a href="#AWS-Fundamentals">AWS-Fundamentals</a></li>
@@ -30,6 +30,7 @@ https://github.com/aireddy73/SAA-C02#Cloud-Computing-Fundamentals
 <li><a href="#NoSQL-and-DynamoDB">NoSQL-and-DynamoDB</a></li>
 </ul>
 
+# Cloud-Computing-Fundamentals
 Cloud computing provides
 
 On-Demand Self-Service: Provision and terminate using a UI/CLI without human interaction.
