@@ -292,5 +292,661 @@ present this as a folder. In actuality this is not true, there are no folders.</
 <h3><a id="user-content-cloudformation-basics" class="anchor" aria-hidden="true" href="#cloudformation-basics"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CloudFormation Basics</h3>
 <p>Templates can modify infrastructure to, create, update and delete.</p>
 <p>Written in YAML or JSON</p>
+<div class="highlight highlight-source-yaml"><pre><span class="pl-c"><span class="pl-c">#</span># This is not mandatory unless a description is added</span>
+<span class="pl-ent">AWSTemplateFormatVersion</span>: <span class="pl-s"><span class="pl-pds">"</span>version date<span class="pl-pds">"</span></span>
+
+<span class="pl-c"><span class="pl-c">#</span># Give details as to what this template does.</span>
+<span class="pl-c"><span class="pl-c">#</span># If you use this section, it MUST immediately follow the AWSTemplateFormatVersion.</span>
+<span class="pl-ent">Description</span>:
+  <span class="pl-s">A sample template</span>
+
+<span class="pl-c"><span class="pl-c">#</span># Can control the command line UI. The bigger your template, the more likely</span>
+<span class="pl-c"><span class="pl-c">#</span># this section is needed</span>
+<span class="pl-ent">Metadata</span>:
+  <span class="pl-s">template metadata</span>
+
+<span class="pl-c"><span class="pl-c">#</span># Prompt the user for more data. Name of something, size of instance,</span>
+<span class="pl-c"><span class="pl-c">#</span># data validation</span>
+<span class="pl-ent">Parameters</span>:
+  <span class="pl-s">set of parameters</span>
+
+<span class="pl-c"><span class="pl-c">#</span># Another optional section. Allows lookup tables, not used often</span>
+<span class="pl-ent">Mappings</span>:
+  <span class="pl-s">set of mappings</span>
+
+<span class="pl-c"><span class="pl-c">#</span># Decision making in the template. Things will only occur if a condition is met.</span>
+<span class="pl-c"><span class="pl-c">#</span># Step 1: create condition</span>
+<span class="pl-c"><span class="pl-c">#</span># Step 2: use the condition to do something else in the template</span>
+<span class="pl-ent">Conditions</span>:
+  <span class="pl-s">set of conditions</span>
+
+<span class="pl-ent">Transform</span>:
+  <span class="pl-s">set of transforms</span>
+
+<span class="pl-c"><span class="pl-c">#</span># The only mandatory field of this section</span>
+<span class="pl-ent">Resources</span>:
+  <span class="pl-s">set of resources</span>
+
+<span class="pl-c"><span class="pl-c">#</span># Once the template is finished it can return data or information.</span>
+<span class="pl-c"><span class="pl-c">#</span># Could return the admin or setup address of a word press blog.</span>
+<span class="pl-ent">Outputs</span>:
+  <span class="pl-s">set of outputs</span></pre></div>
+<h4><a id="user-content-resources" class="anchor" aria-hidden="true" href="#resources"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Resources</h4>
+<p>An example which creates an EC2 instance</p>
+<div class="highlight highlight-source-yaml"><pre><span class="pl-ent">Resources</span>:
+  <span class="pl-ent">Instance</span>: <span class="pl-c"><span class="pl-c">#</span># Logical Resource</span>
+    <span class="pl-ent">Type</span>: <span class="pl-s"><span class="pl-pds">'</span>AWS::EC2::Instance<span class="pl-pds">'</span></span> <span class="pl-c"><span class="pl-c">#</span># This is what will be created</span>
+    <span class="pl-ent">Properties</span>: <span class="pl-c"><span class="pl-c">#</span># Configure the resources in a particular way</span>
+      <span class="pl-ent">ImageId</span>: <span class="pl-s">!Ref LatestAmiId</span>
+      <span class="pl-ent">Instance Type</span>: <span class="pl-s">!Ref Instance Type</span>
+      <span class="pl-ent">KeyName</span>: <span class="pl-s">!Ref Keyname</span></pre></div>
+<p>Once a template is created, AWS will make a stack. This is a living and active
+representation of a template. One template can create infinite amount of stacks.</p>
+<p>For any <strong>Logical Resources</strong> in the stack,
+CF will make a corresponding <strong>Physical Resources</strong> in your AWS account.</p>
+<p>It is cloud formations job to keep the logical and physical resources in sync.</p>
+<p>A template can be updated and then used to update the same stack.</p>
+<h3><a id="user-content-cloudwatch-basics" class="anchor" aria-hidden="true" href="#cloudwatch-basics"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CloudWatch Basics</h3>
+<p>Collects and manages operational data on your behalf.</p>
+<p>Three products in one</p>
+<ul>
+<li>Metrics: data relating to AWS products, apps, on-prem solutions</li>
+<li>Logs: collection, monitoring</li>
+<li>Events: event hub
+<ul>
+<li>If an AWS service does something, CW events can perform another action</li>
+<li>Generate an event to do something at a certain time of day or time of week.</li>
+</ul>
+</li>
+</ul>
+<h4><a id="user-content-namespace" class="anchor" aria-hidden="true" href="#namespace"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Namespace</h4>
+<p>Container for monitoring data.
+Naming can be anything so long as it's not <code>AWS/service</code> such as <code>AWS/EC2</code>.
+This is used for all metric data of that service</p>
+<h4><a id="user-content-metric" class="anchor" aria-hidden="true" href="#metric"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Metric</h4>
+<p>Time ordered set of data points such as:</p>
+<ul>
+<li>CPU Usage</li>
+<li>Network IN/OUT</li>
+<li>Disk IO</li>
+</ul>
+<p>This is not for a specific server. This could get things from different servers</p>
+<p>Anytime CPU Utilization is reported, the <strong>datapoint</strong> will report</p>
+<ul>
+<li>Timestamp = 2019-12-03</li>
+<li>Value = 98.3</li>
+</ul>
+<p><strong>Dimensions</strong> separate data points for different <strong>things</strong> or
+<strong>perspectives</strong> within the same metric</p>
+<h4><a id="user-content-alarms" class="anchor" aria-hidden="true" href="#alarms"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Alarms</h4>
+<p>Has two states <code>ok</code> or <code>alarm</code>.State can send an SNS or action.
+Third state can be insufficient data state. Not a problem, just wait.</p>
+<h3><a id="user-content-shared-responsibility-model" class="anchor" aria-hidden="true" href="#shared-responsibility-model"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Shared Responsibility Model</h3>
+<p>AWS: Responsible for security <strong>OF</strong> the cloud</p>
+<p>Customer: Responsible for security <strong>IN</strong> the cloud</p>
+<h3><a id="user-content-high-availability-ha-fault-tolerance-ft-and-disaster-recover-dr" class="anchor" aria-hidden="true" href="#high-availability-ha-fault-tolerance-ft-and-disaster-recover-dr"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>High Availability (HA), Fault-Tolerance (FT), and Disaster Recover (DR)</h3>
+<h4><a id="user-content-high-availability-ha" class="anchor" aria-hidden="true" href="#high-availability-ha"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>High Availability (HA)</h4>
+<ul>
+<li>Aims to <strong>ensure</strong> an agreed level of operational <strong>performance</strong>, usually
+<strong>uptime</strong>, for a <strong>higher than normal period</strong></li>
+<li>Instead of diagnosing the issue, swap it out.</li>
+<li>Redundant hardware to minimize downtown</li>
+<li>User disruption is not ideal, but is allowed
+<ul>
+<li>The user might need to log back in or lose some data on their screen.</li>
+</ul>
+</li>
+<li>Maximizing a system's uptime
+<ul>
+<li>99.9% (Three 9's) = 8.7 hours downtime per year.</li>
+<li>99.999 (Five 9's) = 5.26 minutes downtime per year.</li>
+</ul>
+</li>
+</ul>
+<h4><a id="user-content-fault-tolerance-ft" class="anchor" aria-hidden="true" href="#fault-tolerance-ft"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Fault-Tolerance (FT)</h4>
+<ul>
+<li>System can <strong>continue operating properly</strong>
+in the event of the <strong>failure of some</strong> (one or more faults within) of its
+<strong>components</strong></li>
+<li>Fault tolerance is much more complicated than high availability and more
+expensive. Outages must be minimized and the system needs levels of
+redundancy.</li>
+<li>An airplane is an example of system that needs Fault Tolerance. It has
+more engines than it needs for redundancy.</li>
+</ul>
+<p>Example:
+A patient is waiting for a life saving surgery and is under anesthetic.
+While being monitored, the life support system is dosing medicine.
+This type of system cannot only be highly available, even a movement of
+interruption is deadly.</p>
+<h4><a id="user-content-disaster-recover-dr" class="anchor" aria-hidden="true" href="#disaster-recover-dr"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Disaster Recover (DR)</h4>
+<ul>
+<li>Set of policies, tools and procedures to <strong>enable the recovery</strong> or
+<strong>continuation</strong> of <strong>vital</strong> technology infrastructure and systems
+<strong>following a natural or human-induced disaster</strong>.</li>
+<li>DR can largely be automated to eliminate the time for recovery and errors.</li>
+</ul>
+<p>This involves:</p>
+<ul>
+<li>Pre-planning
+<ul>
+<li>Ensure plans are in place for extra hardware</li>
+<li>Do not store backups at the same site as the system</li>
+</ul>
+</li>
+<li>DR Processes
+<ul>
+<li>Cloud machines ready when needed</li>
+</ul>
+</li>
+</ul>
+<p>This is designed to keep the crucial and non replaceable parts of the
+system in place.</p>
+<h3><a id="user-content-domain-name-system-dns" class="anchor" aria-hidden="true" href="#domain-name-system-dns"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Domain Name System (DNS)</h3>
+<p>DNS is a discovery service. Translates machines into humans and vice-versa.
+It is a huge database and has to be distributed.</p>
+<p>Parts of the DNS system</p>
+<ul>
+<li>DNS Client: Piece of software running on the OS for a device you're using.</li>
+<li>Resolver: Software on your device or server which queries DNS on your behalf.</li>
+<li>Zone: A part of the DNS database.
+<ul>
+<li>This would be <a href="http://www.amazon.com" rel="nofollow">www.amazon.com</a></li>
+<li>What the data is, the substance</li>
+</ul>
+</li>
+<li>Zonefile: physical database for a zone
+<ul>
+<li>How physically that data is stored</li>
+</ul>
+</li>
+<li>Nameserver: where zonefiles are hosted</li>
+</ul>
+<p>Steps:</p>
+<p>Find the Nameserver which hosts a particular Zonefile.
+Query that Nameserver for a record with that Zone.
+It then passes the information back to the client.</p>
+<h4><a id="user-content-dns-root" class="anchor" aria-hidden="true" href="#dns-root"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DNS Root</h4>
+<p>The starting point of DNS.
+DNS names are read right to left with multiple parts separated by periods.</p>
+<p><code>www.netflix.com.</code></p>
+<p>The period is assumed to be there in a browser when it's not present.
+The DNS Root is hosted on DNS Root Servers (13). These are hosted
+by 12 major companies.</p>
+<p><strong>Root Hints</strong> is a pointer to the DNS Root server</p>
+<p>Process</p>
+<ol>
+<li>DNS client asks DNS Resolver for IP address of a given DNS name.</li>
+<li>Using the Root Hints file, the DNS Resolver communicates with one or
+more of the root servers to access the root zone and begin the process
+of finding the IP address.</li>
+</ol>
+<p>The Root Zone is organized by IANA (Internet Assigned Numbers Authority).
+Their job is to manage the contents of the root zone. IANA is in charge
+of the DNS system because they control the root zone.</p>
+<h4><a id="user-content-dns-hierarchy" class="anchor" aria-hidden="true" href="#dns-hierarchy"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DNS Hierarchy</h4>
+<p>Assuming a laptop is querying DNS directly for <a href="http://www.amazon.com" rel="nofollow">www.amazon.com</a> and using
+a root hints file to know how to access a root server and query the root zone.</p>
+<ul>
+<li>When something is trusted in DNS, it is an <strong>authority</strong>.</li>
+<li>One piece can be authoritative for root.</li>
+<li>One piece can be authoritative for amazon.com</li>
+<li>The root zone is the start and the only thing trusted in DNS.</li>
+<li>The root zone can delegate a part of itself to another zone or entity.</li>
+<li>That someone else then becomes authoritative for that piece of itself only.</li>
+<li>The root zone is just a database of the top level domains.</li>
+</ul>
+<p>The top level domains are the only things to the left of the DNS name.</p>
+<ul>
+<li><code>.com</code> or <code>.org</code> are generic top level domains (GTLD)</li>
+<li><code>.uk</code> is a country code top level domains (CCTLD)</li>
+</ul>
+<p><strong>Registry</strong> maintains the zones for a TLD (e.g .ORG)
+<strong>Registrar</strong> has relationships with the .org TLD zone manager
+allowing domain registration</p>
+<h3><a id="user-content-route53-fundamentals" class="anchor" aria-hidden="true" href="#route53-fundamentals"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Route53 Fundamentals</h3>
+<ul>
+<li>Registers domains</li>
+<li>Can Host Zone Files on managed nameservers</li>
+<li>This is a global service, no need to pick a region</li>
+<li>Globally Resilience
+<ul>
+<li>Can operate with failure in one or more regions</li>
+</ul>
+</li>
+</ul>
+<h4><a id="user-content-register-domains" class="anchor" aria-hidden="true" href="#register-domains"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Register Domains</h4>
+<p>Has relationships with all major registries</p>
+<ul>
+<li>Route 53 will check with the top level domain to see if the name is available</li>
+<li>Router 53 creates a zonefile for the domain to be registered</li>
+<li>Allocates nameservice for that zone
+<ul>
+<li>Generally four of these for one individual zone</li>
+<li>This is a hosted zone</li>
+<li>The zone file will be put on these four managed nameservers</li>
+</ul>
+</li>
+<li>Router 53 will communicate with the <code>.org</code> registry and add the nameserver
+records into the zone file for the top level domain.
+<ul>
+<li>This is done with a nameserver record.</li>
+</ul>
+</li>
+</ul>
+<h4><a id="user-content-route53-details" class="anchor" aria-hidden="true" href="#route53-details"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Route53 Details</h4>
+<p><strong>Zonefiles</strong> in AWS
+Hosted on four managed name servers</p>
+<ul>
+<li>Can be <strong>public</strong> or <strong>private</strong></li>
+</ul>
+<h3><a id="user-content-dns-record" class="anchor" aria-hidden="true" href="#dns-record"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>DNS Record</h3>
+<ul>
+<li>Nameserver (NS): Allows delegation to occur in the DNS.</li>
+<li>A and AAAA Records: Maps the host to a v4 or v6 host type. Most of the time
+you will make both types of record, A and AAAA.</li>
+<li>CNAME Record Type: Allows DNS shortcuts to reduce admin overhead.
+CNAMES cannot point directly at an IP address and only another name.</li>
+<li>MX records: How emails are sent. They have two main parts:
+<ul>
+<li>Priority: Lower values for the priority field are higher priority.</li>
+<li>Value
+<ul>
+<li>If it is just a host, it will not have a dot on the right. It is assumed
+to be part of the same zone as the host.</li>
+<li>If you include a dot on the right, it is a <em><strong>fully qualified domain name</strong></em></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>TXT Record: Allows you to add arbitrary text to a domain.
+One common usage is to prove domain ownership.</li>
+</ul>
+<h4><a id="user-content-ttl---time-to-live" class="anchor" aria-hidden="true" href="#ttl---time-to-live"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>TTL - Time To Live</h4>
+<p>This is a numeric setting on DNS records in seconds.
+Allows the admin to specify how long the query can be stored
+at the resolver server.
+If you need to upgrade the records, it is smart to lower the TTL value first.</p>
+<p>Getting the answer from an Authoritative Source is known as an
+<strong>Authoritative Answer</strong>.</p>
+<p>If another client queries the same thing, they will get back a
+<strong>Non-Authoritative</strong> response.</p>
+<hr>
+<h2><a id="user-content-iam-accounts-aws-organizations" class="anchor" aria-hidden="true" href="#iam-accounts-aws-organizations"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>IAM-Accounts-AWS-Organizations</h2>
+<h3><a id="user-content-iam-identity-policies" class="anchor" aria-hidden="true" href="#iam-identity-policies"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>IAM Identity Policies</h3>
+<p>Identity Policies are attached to AWS Identities which are
+IAM users, IAM groups, and IAM roles. These are a set of security statements
+that ALLOW or DENY access to AWS resources.</p>
+<p>When an identity attempts to access AWS resources, that identity needs
+to prove who it is to AWS, a process known as <strong>Authentication</strong>.
+Once authenticated, that identity is known as an <strong>authenticated identity</strong></p>
+<h4><a id="user-content-statement-components" class="anchor" aria-hidden="true" href="#statement-components"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Statement Components</h4>
+<ul>
+<li>Statement ID (SID): Optional field that should help describe
+<ul>
+<li>The resource you're interacting</li>
+<li>The actions you're trying to perform</li>
+</ul>
+</li>
+<li>Effect: is either <code>allow</code> or <code>deny</code>.
+<ul>
+<li>It is possible to be allowed and denied at the same time</li>
+</ul>
+</li>
+<li>Action are formatted <code>service:operation</code>. There are three options:
+<ul>
+<li>specific individual action</li>
+<li>wildcard as an action</li>
+<li>list of multiple independent actions</li>
+</ul>
+</li>
+<li>Resource: similar to action except for format <code>arn:aws:s3:::catgifs</code></li>
+</ul>
+<h4><a id="user-content-priority-level" class="anchor" aria-hidden="true" href="#priority-level"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Priority Level</h4>
+<ul>
+<li>Explicit Deny: Denies access to a particular resource cannot be overruled.</li>
+<li>Explicit Allow: Allows access so long there is not an explicit deny.</li>
+<li>Default Deny (Implicit): IAM identities start off with no resource access.</li>
+</ul>
+<h4><a id="user-content-inline-policies-and-managed-policies" class="anchor" aria-hidden="true" href="#inline-policies-and-managed-policies"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Inline Policies and Managed Policies</h4>
+<ul>
+<li>Inline Policy: grants access and assigned on each accounts individually.</li>
+<li>Managed Policy (best practice): one policy is applied to all users at once.</li>
+</ul>
+<h3><a id="user-content-iam-users" class="anchor" aria-hidden="true" href="#iam-users"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>IAM Users</h3>
+<p>Identity used for anything requiring <strong>long-term</strong> AWS access</p>
+<ul>
+<li>Humans</li>
+<li>Applications</li>
+<li>Service Accounts</li>
+</ul>
+<p>If you can name a thing to use the AWS account, this is an IAM user.</p>
+<p>When a <strong>principal</strong> wants to <strong>request</strong> to perform an action,
+it will <strong>authenticate</strong> against an identity within IAM. An IAM user is an
+identity which can be used in this way.</p>
+<p>There are two ways to authenticate:</p>
+<ul>
+<li>Username and Password</li>
+<li>Access Keys (CLI)</li>
+</ul>
+<p>Once the <strong>Principal</strong> has authenticated, it becomes an <strong>authenticated identity</strong></p>
+<h4><a id="user-content-amazon-resource-name-arn" class="anchor" aria-hidden="true" href="#amazon-resource-name-arn"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Amazon Resource Name (ARN)</h4>
+<p>Uniquely identify resources within any AWS accounts.</p>
+<p>This allows you to refer to a single or group of resources.
+This prevents individual resources from the same account but in
+different regions from being confused.</p>
+<p>ARN generally follows the same format:</p>
+<div class="highlight highlight-source-shell"><pre>arn:partition:service:region:account-id:resource-id
+arn:partition:service:region:account-id:resource-type/resource-id
+arn:partition:service:region:account-id:resource-type:resource-id</pre></div>
+<ul>
+<li>partition: almost always <code>aws</code> unless it is china <code>aws-cn</code></li>
+<li>region: can be a double colon (::) if that doesn't matter</li>
+<li>account-id: the account that owns the resource
+<ul>
+<li>EC2 needs this</li>
+<li>S3 does not need account-id because its globally unique</li>
+</ul>
+</li>
+<li>resource-type/id: changes based on the resource</li>
+</ul>
+<p>An example that leads to confusion:</p>
+<ul>
+<li>arn:aws:s3:::catgifs
+<ul>
+<li>This references an actual bucket</li>
+</ul>
+</li>
+<li>arn:aws:s3:::catgifs/*
+<ul>
+<li>This refers to objects in that bucket, but not the bucket itself.</li>
+</ul>
+</li>
+</ul>
+<p>These two ARNs do not overlap</p>
+<h4><a id="user-content-iam-facts" class="anchor" aria-hidden="true" href="#iam-facts"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>IAM FACTS</h4>
+<ul>
+<li>5,000 IAM users per account</li>
+<li>IAM user can be a member of 10 groups</li>
+</ul>
+<h3><a id="user-content-iam-groups" class="anchor" aria-hidden="true" href="#iam-groups"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>IAM Groups</h3>
+<p>Containers for users. <strong>You cannot login to IAM groups</strong> They have no
+credentials of their own. Used solely for management of IAM users.</p>
+<p>Groups bring two benefits</p>
+<ol>
+<li>Effective administrative style management of users based on the team</li>
+<li>Groups can have Inline and Managed policies attached.</li>
+</ol>
+<p>AWS merges all of the policies from all groups the user is in together.</p>
+<ul>
+<li>The 5000 IAM user limit applies to groups.</li>
+<li>There is <strong>no all users</strong> IAM group.
+<ul>
+<li>You can create a group and add all users into that group, but it needs to be
+created and managed on your own.</li>
+</ul>
+</li>
+<li>No Nesting: You cannot have groups within groups.</li>
+<li>300 Group Limit per account. This can be fixed with a support ticket.</li>
+</ul>
+<p><strong>Resource Policy</strong> A bucket can have a policy associated with that bucket.
+It does so by referencing the identity using an ARN (Amazon Reference Name).
+A policy on a resource can reference IAM users and IAM roles by the ARN.
+A bucket can give access to one or more users or one or more roles.</p>
+<p><strong>GROUPS ARE NOT A TRUE IDENTITY</strong>
+<strong>THEY CAN'T BE REFERENCED AS A PRINCIPAL IN A POLICY</strong></p>
+<p>An S3 Resource cannot grant access to a group, it is not an identity.
+Groups are used to allow permissions to be assigned to IAM users.</p>
+<h3><a id="user-content-iam-roles" class="anchor" aria-hidden="true" href="#iam-roles"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>IAM Roles</h3>
+<p>A single thing that uses an identity is an IAM User.</p>
+<p>IAM Roles are also identities that are used by large groups of individuals.
+If have more than 5000 principals, it could be a candidate for an IAM Role.</p>
+<p>IAM Roles are <strong>assumed</strong> you become that role.</p>
+<p>This can be used short term by other identities.</p>
+<p>IAM Users can have inline or managed policies which control which permissions
+the identity gets within AWS</p>
+<p>Policies which grant, allow or deny, permissions based on their associations.</p>
+<p>IAM Roles have two types of roles can be attached.</p>
+<ul>
+<li>Trust Policy: Specifies which identities are allowed to assume the role.</li>
+<li>Permissions Policy: Specifies what the role is allowed to do.</li>
+</ul>
+<p>If an identity is allowed on the <strong>Trust Policy</strong>, it is given a set
+of <strong>Temporary Security Credentials</strong>. Similar to access keys except they
+are time limited to expire. The identity will need to renew them by
+reassuming the role.</p>
+<p>Every time the <strong>Temporary Security Credentials</strong> are used, the access
+is checked against the <strong>Permissions Policy</strong>. If you change the policy, the
+permissions of the temp credentials also change.</p>
+<p>Roles are real identities and can be referenced within resource policies.</p>
+<p>Secure Token Service (sts:AssumeRole) this is what generates the temporary
+security credentials (TSC).</p>
+<h3><a id="user-content-when-to-use-iam-roles" class="anchor" aria-hidden="true" href="#when-to-use-iam-roles"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>When to use IAM Roles</h3>
+<p>Lambda Execution Role.
+For a given lambda function, you cannot determine the number of principals
+which suggested a Role might be the ideal identity to use.</p>
+<ul>
+<li>Trust Policy: to trust the Lambda Service</li>
+<li>Permission Policy: to grant access to AWS services.</li>
+</ul>
+<p>When this is run, it uses the sts:AssumeRole to generate keys to
+CloudWatch and S3.</p>
+<p>It is better when possible to use an IAM Role versus attaching a policy.</p>
+<h4><a id="user-content-emergency-or-out-of-the-usual-situations" class="anchor" aria-hidden="true" href="#emergency-or-out-of-the-usual-situations"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Emergency or out of the usual situations</h4>
+<p>Break Glass Situation - There is a key for something the team does not
+normally have access to. When you break the glass, you must have a reason
+to do.
+A role can have an Emergency Role which will allow further access if
+its really needed.</p>
+<h4><a id="user-content-adding-aws-into-existing-corp-environment" class="anchor" aria-hidden="true" href="#adding-aws-into-existing-corp-environment"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Adding AWS into existing corp environment</h4>
+<p>You may have an existing identity provider you are trying to allow access to.
+This may offer SSO (Single Sign On) or over 5000 identities.
+This is useful to reuse your existing identities for AWS.
+External accounts can't be used to access AWS directly.
+To solve this, you allow an IAM role in the AWS account to be assumed
+by one of the active directories.
+<strong>ID Federation</strong> allowing an external service the ability to assume a role.</p>
+<h4><a id="user-content-making-an-app-with-1000000-users" class="anchor" aria-hidden="true" href="#making-an-app-with-1000000-users"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Making an app with 1,000,000 users</h4>
+<p><strong>Web Identity Federation</strong> uses IAM roles to allow broader access.
+These allow you to use an existing web identity such as google, facebook, or
+twitter to grant access to the app.
+We can trust these web identities and allow those identities to assume
+an IAM role to access web resources such as DynamoDB.
+No AWS Credentials are stored on the application.
+Can scale quickly and beyond.</p>
+<h4><a id="user-content-cross-account-access" class="anchor" aria-hidden="true" href="#cross-account-access"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Cross Account Access</h4>
+<p>You can use a role in the partner account and use that to upload objects
+to AWS resources.</p>
+<h3><a id="user-content-aws-organizations" class="anchor" aria-hidden="true" href="#aws-organizations"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>AWS Organizations</h3>
+<p>Without an organization, each AWS account needs it's own set of IAM users
+as well as individual payment methods.
+If you have more than 5 to 10 accounts, you would want to use an org.</p>
+<p>Take a single AWS account <strong>standard AWS account</strong> and create an org.
+The standard AWS account then becomes the <strong>master account</strong>.
+The master account can invite other existing standard AWS accounts. They will
+need to approve their joining to the org.</p>
+<p>When standard AWS accounts become part of the org, they
+become <strong>member accounts</strong>.
+Organizations can only have one <strong>master accounts</strong> and zero or more
+<strong>member accounts</strong></p>
+<h4><a id="user-content-organization-root" class="anchor" aria-hidden="true" href="#organization-root"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Organization Root</h4>
+<p>This is a container that can hold AWS member accounts or the master account.
+It could also contain <strong>organizational units</strong> which can contain other
+units or member accounts.</p>
+<h4><a id="user-content-consolidated-billing" class="anchor" aria-hidden="true" href="#consolidated-billing"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Consolidated billing</h4>
+<p>The individual billing for the member accounts is removed and they pass their
+billing to the master account.
+Inside an AWS organization, you get a single monthly bill for the master
+account which covers all the billing for each users.
+Can offer a discount with consolidation of reservations and volume discounts</p>
+<h4><a id="user-content-create-new-accounts-in-an-org" class="anchor" aria-hidden="true" href="#create-new-accounts-in-an-org"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Create new accounts in an org</h4>
+<p>Adding accounts in an organization is easy with only an email needed.
+You no longer need IAM users in each accounts. You can use IAM roles
+to change these.
+It is best to have a single AWS account only used for login.
+Some enterprises may use an AWS account while smaller ones may use the master.</p>
+<h4><a id="user-content-role-switching" class="anchor" aria-hidden="true" href="#role-switching"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Role Switching</h4>
+<p>Allows you to switch between accounts from the command line</p>
+<h3><a id="user-content-service-control-policies" class="anchor" aria-hidden="true" href="#service-control-policies"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Service Control Policies</h3>
+<p>Can be used to restrict what member accounts in an org can do.</p>
+<p>JSON policy document that can be attached:</p>
+<ul>
+<li>To the org as a whole by attaching to the root container.</li>
+<li>A specific Organizational Unit</li>
+<li>A specific member only.</li>
+</ul>
+<p>The master account cannot be restricted by SCPs which means this
+should not be used because it is a security risk.</p>
+<p>SCPs limit what the account, <strong>including root</strong> can do inside that account.
+They don't grant permissions themselves, just act as a barrier.</p>
+<h4><a id="user-content-allow-list-vs-deny-list" class="anchor" aria-hidden="true" href="#allow-list-vs-deny-list"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Allow List vs Deny List</h4>
+<p>Deny list is the default.</p>
+<p>When you enable SCP on your org, AWS applies <code>FullAWSAccess</code>. This means
+SCPs have no effect because nothing is restricted. It has zero influence
+by themselves.</p>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>Version<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>2012-10-17<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>Statement<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>Effect<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Allow<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>Action<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>Resource<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>
+  }
+}</pre></div>
+<p>SCPs by themselves don't grant permissions. When SCPs are enabled,
+there is an implicit deny.</p>
+<p>You must then add any services you want to Deny such as <code>DenyS3</code></p>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>Version<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>2012-10-17<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>Statement<span class="pl-pds">"</span></span>: {
+    <span class="pl-s"><span class="pl-pds">"</span>Effect<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Deny<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>Action<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>s3:*<span class="pl-pds">"</span></span>,
+    <span class="pl-s"><span class="pl-pds">"</span>Resource<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>
+  }
+}</pre></div>
+<p><strong>Deny List</strong> is a good default because it allows for the use of growing
+services offered by AWS. A lot less admin overhead.</p>
+<p><strong>Allow List</strong> allows you to be conscience of your costs.</p>
+<ul>
+<li>To begin, you must remove the <code>FullAWSAccess</code> list</li>
+<li>Then, specify which services need to be allowed access.</li>
+<li>Example <code>AllowS3EC2</code> is below</li>
+</ul>
+<div class="highlight highlight-source-json"><pre>{
+  <span class="pl-s"><span class="pl-pds">"</span>Version<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>2012-10-17<span class="pl-pds">"</span></span>,
+  <span class="pl-s"><span class="pl-pds">"</span>Statement<span class="pl-pds">"</span></span>: [
+    {
+        <span class="pl-s"><span class="pl-pds">"</span>Effect<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>Allow<span class="pl-pds">"</span></span>,
+        <span class="pl-s"><span class="pl-pds">"</span>Action<span class="pl-pds">"</span></span>: [
+            <span class="pl-s"><span class="pl-pds">"</span>s3:*<span class="pl-pds">"</span></span>,
+            <span class="pl-s"><span class="pl-pds">"</span>ec2:*<span class="pl-pds">"</span></span>
+        ],
+    <span class="pl-s"><span class="pl-pds">"</span>Resource<span class="pl-pds">"</span></span>: <span class="pl-s"><span class="pl-pds">"</span>*<span class="pl-pds">"</span></span>
+    }
+  ]
+}</pre></div>
+<h3><a id="user-content-cloudwatch-logs" class="anchor" aria-hidden="true" href="#cloudwatch-logs"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CloudWatch Logs</h3>
+<p>This is a public service, this can be used from AWS VPC or on premise
+environment.</p>
+<p>This allows to <strong>store</strong>, <strong>monitor</strong> and <strong>access</strong> logging data.</p>
+<ul>
+<li>This is a piece of information data and a timestamp</li>
+<li>Can be more fields, but at least these two</li>
+</ul>
+<p>Comes with some AWS Integrations.
+Security is provided with IAM roles or Service roles
+Can generate metrics based on logs <strong>metric filter</strong></p>
+<h4><a id="user-content-architecture-of-cloudwatch-logs" class="anchor" aria-hidden="true" href="#architecture-of-cloudwatch-logs"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Architecture of CloudWatch Logs</h4>
+<p>It is a regional service <code>us-east-1</code></p>
+<p>Need logging sources such as external APIs or databases. This sends
+information as <strong>log events</strong>. These are stored in <strong>log streams</strong>. This is a
+sequence of log events from the same source.</p>
+<p><strong>Log Groups</strong> are containers for multiple logs streams of the same
+type of logging. This also stores configuration settings such as
+retention settings and permissions.</p>
+<p>Once the settings are defined on a log group, they apply to all log streams
+in that log group. Metric filters are also applied on the log groups.</p>
+<h3><a id="user-content-cloudtrail-essentials" class="anchor" aria-hidden="true" href="#cloudtrail-essentials"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CloudTrail Essentials</h3>
+<p>Concerned with who did what.</p>
+<p>Logs API calls or activities as <strong>CloudTrail Event</strong></p>
+<p>Stores the last 90 days of events in the <strong>Event History</strong>. This is enabled
+by default and is no additional cost.</p>
+<p>To customize the service you need to create a new <strong>trail</strong>.
+Two types of events. Default only logs Management Events</p>
+<ul>
+<li>
+<p>Management Events:
+Provide information about management operations performed on resources
+in the AWS account. Create an EC2 instance or terminating one.</p>
+</li>
+<li>
+<p>Data Events:
+Objects being uploaded to S3 or a Lambda function being invoked. This is not
+enabled by default and must be enabled for that trail.</p>
+</li>
+</ul>
+<h4><a id="user-content-cloudtrail-trail" class="anchor" aria-hidden="true" href="#cloudtrail-trail"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CloudTrail Trail</h4>
+<p>Logs events for the AWS region it is created in. It is a regional service.</p>
+<p>Once created, it can operate in two ways</p>
+<ul>
+<li>One region trail</li>
+<li>All region trail
+<ul>
+<li>Collection of trails in all regions</li>
+<li>When new regions are added, they will be added to this trail automatically</li>
+</ul>
+</li>
+</ul>
+<p>Most services log events in the region they occur. The trail then must be
+a one region trail in that region or an all region trail to log that event.</p>
+<p>A small number of services log events globally to one region. Global services
+such as IAM or STS or CloudFront always log their events to <code>us-east-1</code></p>
+<p>A trail must have this enabled to have this logged.</p>
+<p>AWS services are largely split into regional services or global services.</p>
+<p>When the services log, they log in the region they are created or
+to <code>us-east-1</code> if they are a global service.</p>
+<p>A trail can store events in an S3 bucket as a compressed JSON file. It can
+also use CloudWatch Logs to output the data.</p>
+<p>CloudTrail products can create an organizational trail. This allows a single
+management point for all the APIs and management events for that org.</p>
+<h4><a id="user-content-cloudtrail-exam-powerup" class="anchor" aria-hidden="true" href="#cloudtrail-exam-powerup"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CloudTrail Exam PowerUp</h4>
+<ul>
+<li>It is enabled by default for 90 days without S3</li>
+<li>Trails are how you configure S3 and CWLogs</li>
+<li>Management events are only saved by default</li>
+<li>IAM, STS, CloudFront are Global Service events and log to <code>us-east-1</code>
+<ul>
+<li>Trail must be enabled to do this</li>
+</ul>
+</li>
+<li>NOT REALTIME - There is a delay. Approximately 15 minute delay</li>
+</ul>
+<h4><a id="user-content-cloudtrail-pricing" class="anchor" aria-hidden="true" href="#cloudtrail-pricing"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>CloudTrail Pricing</h4>
+<p><a href="https://aws.amazon.com/cloudtrail/pricing/" rel="nofollow">https://aws.amazon.com/cloudtrail/pricing/</a></p>
+<hr>
+<h2><a id="user-content-simple-storage-service-s3" class="anchor" aria-hidden="true" href="#simple-storage-service-s3"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>Simple-Storage-Service-(S3)</h2>
+<h3><a id="user-content-s3-security" class="anchor" aria-hidden="true" href="#s3-security"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>S3 Security</h3>
+<p><strong>S3 is private by default!</strong> The only identity which has any initial
+access to an S3 bucket is the account root user of the account which owns that
+bucket.</p>
+<h4><a id="user-content-s3-bucket-policy" class="anchor" aria-hidden="true" href="#s3-bucket-policy"><svg class="octicon octicon-link" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true"><path fill-rule="evenodd" d="M7.775 3.275a.75.75 0 001.06 1.06l1.25-1.25a2 2 0 112.83 2.83l-2.5 2.5a2 2 0 01-2.83 0 .75.75 0 00-1.06 1.06 3.5 3.5 0 004.95 0l2.5-2.5a3.5 3.5 0 00-4.95-4.95l-1.25 1.25zm-4.69 9.64a2 2 0 010-2.83l2.5-2.5a2 2 0 012.83 0 .75.75 0 001.06-1.06 3.5 3.5 0 00-4.95 0l-2.5 2.5a3.5 3.5 0 004.95 4.95l1.25-1.25a.75.75 0 00-1.06-1.06l-1.25 1.25a2 2 0 01-2.83 0z"></path></svg></a>S3 Bucket Policy</h4>
+<p>This is a <strong>resource policy</strong></p>
+<ul>
+<li>controls who has access to that resource</li>
+<li>can allow or deny access from different accounts</li>
+<li>can allow or deny anonymous principals
+<ul>
+<li>this is explicitly declared in the bucket policy itself.</li>
+</ul>
+</li>
+</ul>
+<p>Different from an <strong>identity policy</strong></p>
+<ul>
+<li>controls what that identity can access</li>
+<li>can only be attached to identities in your own account
+<ul>
+<li>no way of giving an identity in another account access to a bucket.</li>
+</ul>
+</li>
+</ul>
 
    
