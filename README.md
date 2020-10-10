@@ -8,26 +8,26 @@ Table of Contents
 
 https://github.com/aireddy73/SAA-C02#Cloud-Computing-Fundamentals
 
-Cloud-Computing-Fundamentals
-AWS-Fundamentals
-IAM-Accounts-AWS-Organizations
-Simple-Storage-Service-S3
-Virtual-Private-Cloud-VPC
-Elastic-Cloud-Compute-EC2
-Containers-and-ECS
-Advanced-EC2
-Route-53
-Relational-Database-Service-RDS
-Network-Storage-EFS
-HA-and-Scaling
-Serverless-and-App-Services
-CDN-and-Optimization
-Advanced-VPC
-Hybrid-and-Migration
-Security-Deployment-Operations
-NoSQL-and-DynamoDB
+# Cloud-Computing-Fundamentals
+# AWS-Fundamentals
+# IAM-Accounts-AWS-Organizations
+# Simple-Storage-Service-S3
+# Virtual-Private-Cloud-VPC
+# Elastic-Cloud-Compute-EC2
+# Containers-and-ECS
+# Advanced-EC2
+# Route-53
+# Relational-Database-Service-RDS
+# Network-Storage-EFS
+# HA-and-Scaling
+# Serverless-and-App-Services
+# CDN-and-Optimization
+# Advanced-VPC
+# Hybrid-and-Migration
+# Security-Deployment-Operations
+# NoSQL-and-DynamoDB
 
-Cloud-Computing-Fundamentals
+# Cloud-Computing-Fundamentals
 
 Cloud computing provides
 
