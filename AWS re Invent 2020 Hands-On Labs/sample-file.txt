@@ -1,0 +1,3 @@
+This sample text file is used to illustrate the use of versioning in an Amazon S3 bucket.
+
+Make it a great day!

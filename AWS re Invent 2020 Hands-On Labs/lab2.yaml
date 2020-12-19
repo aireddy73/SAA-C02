@@ -1,0 +1,12 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Basic S3 Bucket CloudFormation template
+Resources:
+  S3BucketForWebsiteContent:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      AccessControl: PublicRead
+Outputs:
+  BucketName:
+    Value: !Ref S3BucketForWebsiteContent
+    Description: Name of the newly created Amazon S3 Distribution

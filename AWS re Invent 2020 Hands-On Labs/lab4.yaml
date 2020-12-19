@@ -1,0 +1,139 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'AWS CloudFormation Sample Template UpdateTutorial Part 3: Sample template
+  that can be used to test EC2 updates. **WARNING** This template creates an Amazon
+  Ec2 Instance. You will be billed for the AWS resources used if you create a stack
+  from this template.'
+Parameters:
+
+  LinuxAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+
+  ENV:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - prod
+
+  VPCId:
+    Description: VPC ID of the Lab VPC
+    Type: String
+
+  VPCPublicSubnetId:
+    Description: Subnet ID of the public subnet within the Lab VPC
+    Type: String
+
+Mappings:
+  EC2TypeConfig:
+    prod:
+      InstanceType: t2.small
+    dev:
+      InstanceType: t2.micro
+
+Resources:
+  WebServerInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - ec2-role-2
+
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  Endpoint:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref WebServerHost
+
+  WebServerHost:
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT5M
+    Type: AWS::EC2::Instance
+    Metadata:
+      Comment: Install a simple PHP application
+      AWS::CloudFormation::Init:
+        config:
+          packages:
+            yum:
+              httpd: []
+              php: []
+          files:
+            /var/www/html/index.php:
+              content: |
+                <?php
+                echo '<h1>AWS CloudFormation sample PHP application</h1>';
+                echo 'Updated version via UpdateStack';
+                 ?>
+              mode: 000644
+              owner: apache
+              group: apache
+            /etc/cfn/cfn-hup.conf:
+              content: !Sub |
+                [main]
+                stack=${AWS::StackName}
+                region=${AWS::Region}
+              mode: 000400
+              owner: root
+              group: root
+            /etc/cfn/hooks.d/cfn-auto-reloader.conf:
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.WebServerHost.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -s ${AWS::StackName} -r WebServerHost --region  ${AWS::Region}
+                runas=root
+          services:
+            sysvinit:
+              httpd:
+                enabled: true
+                ensureRunning: true
+              cfn-hup:
+                enabled: true
+                ensureRunning: true
+                files:
+                  - /etc/cfn/cfn-hup.conf
+                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
+
+    Properties:
+      Tags:
+        - Key: Name
+          Value: Web server - port 80 and 22
+      
+      ImageId: !Ref LinuxAmiId
+      InstanceType: !FindInMap [EC2TypeConfig, !Ref ENV, InstanceType]
+      NetworkInterfaces:
+        - DeviceIndex: 0
+          AssociatePublicIpAddress: true
+          SubnetId: !Ref VPCPublicSubnetId
+          GroupSet:
+            - !Ref WebServerSecurityGroup
+      IamInstanceProfile: !Ref WebServerInstanceProfile
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            yum update -y aws-cfn-bootstrap
+            /opt/aws/bin/cfn-init -s ${AWS::StackName} -r WebServerHost --region ${AWS::Region}
+
+            /opt/aws/bin/cfn-hup || error_exit 'Failed to start cfn-hup'
+
+            /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource WebServerHost --region ${AWS::Region}
+Outputs:
+  WebsiteURL:
+    Value: !Sub http://${Endpoint}
+    Description: Application URL

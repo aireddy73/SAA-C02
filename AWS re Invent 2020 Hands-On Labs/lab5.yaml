@@ -1,0 +1,142 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'AWS CloudFormation Sample Template UpdateTutorial Part 5: Sample template
+  that can be used to test EC2 updates convert a single instance deployment into an
+  Auto Scaled, Load Balanced solutio. **WARNING** This template creates an Amazon
+  Ec2 Instance. You will be billed for the AWS resources used if you create a stack
+  from this template.'
+  
+Parameters:
+
+  LinuxAmiId:
+    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
+    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+
+  ENV:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - prod
+
+
+  VPCId:
+    Description: VPC ID of the Lab VPC
+    Type: String
+
+  VPCPublicSubnetId:
+    Description: Subnet ID of the public subnet within the Lab VPC
+    Type: String
+
+  VPCPublicSubnetAZ:
+    Description: AZ of the public subnet within the Lab VPC
+    Type: String
+
+Mappings:
+  EC2TypeConfig:
+    prod:
+      InstanceType: t2.small
+    dev:
+      InstanceType: t2.micro
+
+Resources:
+  WebServerInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - ec2-role-2
+
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP
+      VpcId: !Ref VPCId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  ElasticLoadBalancer:
+    Type: AWS::ElasticLoadBalancing::LoadBalancer
+    Properties:
+      Subnets:
+        - !Ref VPCPublicSubnetId
+      SecurityGroups:
+        - !Ref WebServerSecurityGroup
+      Listeners:
+        - LoadBalancerPort: 80
+          InstancePort: 80
+          Protocol: HTTP
+      HealthCheck:
+        Target: HTTP:80/
+        HealthyThreshold: 3
+        UnhealthyThreshold: 5
+        Interval: 30
+        Timeout: 5
+
+  WebServerGroup:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      AvailabilityZones:
+        - !Ref VPCPublicSubnetAZ
+      LaunchConfigurationName: !Ref WebServerConfig
+      MinSize: 2
+      MaxSize: 3
+      LoadBalancerNames:
+        - !Ref ElasticLoadBalancer
+      VPCZoneIdentifier:
+        - !Ref VPCPublicSubnetId
+
+  WebServerConfig:
+    CreationPolicy:
+      ResourceSignal:
+        Timeout: PT5M
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Metadata:
+      Comment: Install a simple PHP application
+      AWS::CloudFormation::Init:
+        config:
+          packages:
+            yum:
+              httpd: []
+              php: []
+          files:
+            /var/www/html/index.php:
+              content: |
+                <?php
+                echo '<h1>AWS CloudFormation sample PHP application</h1>';
+                echo 'Highly available, load balanced stack updated version via UpdateStack';
+                 ?>
+              mode: 000644
+              owner: apache
+              group: apache
+          services:
+            sysvinit:
+              httpd:
+                enabled: true
+                ensureRunning: true
+              sendmail:
+                enabled: false
+                ensureRunning: false
+
+    Properties:
+      ImageId: !Ref LinuxAmiId
+      InstanceType: !FindInMap [EC2TypeConfig, !Ref ENV, InstanceType]
+      SecurityGroups:
+        - !Ref WebServerSecurityGroup
+      IamInstanceProfile: !Ref WebServerInstanceProfile
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            yum update -y aws-cfn-bootstrap
+            /opt/aws/bin/cfn-init -s ${AWS::StackName} -r WebServerConfig --region ${AWS::Region}
+
+            /opt/aws/bin/cfn-hup || error_exit 'Failed to start cfn-hup'
+
+            /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource WebServerConfig --region ${AWS::Region}
+Outputs:
+  WebsiteURL:
+    Value: !Sub http://${ElasticLoadBalancer.DNSName}
+    Description: Application URL
